@@ -8,6 +8,7 @@ public class NetworkClientUI : MonoBehaviour {
 
 	static NetworkClient client;
 	bool isConnecting;
+	public string stringToEdit = "Enter IP Address";
 
 	void OnGUI()
 	{
@@ -17,9 +18,11 @@ public class NetworkClientUI : MonoBehaviour {
 
 		if(!client.isConnected)
 		{
-			if(GUI.Button(new Rect(Screen.width/2,10,100,90), "Connect"))
+			stringToEdit = GUI.TextField(new Rect(Screen.width/2 -60,Screen.height/2,120,20), stringToEdit, 25);
+			if(GUI.Button(new Rect(Screen.width/2-50,10,100,90), "Connect"))
 			{
-				Connect();
+				
+				Connect(stringToEdit);
 			}
 		}
 	}
@@ -30,10 +33,10 @@ public class NetworkClientUI : MonoBehaviour {
 		client = new NetworkClient();
 	}
 	
-	void Connect()
+	void Connect(string connectAddress)
 	{
 		isConnecting = true;
-		client.Connect("10.0.0.18", 25000);
+		client.Connect(connectAddress, 25000);
 	}
 
 	static public void SendAccelerometerInfo(Vector3 deltaAccel)

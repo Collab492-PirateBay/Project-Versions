@@ -6,6 +6,7 @@ using UnityEngine;
 public class TestAccelerometer : MonoBehaviour {
 
 	public NetworkServerUI input;
+    public float speed = 0.25f;
 
 	// Use this for initialization
 	void Start () {
@@ -14,6 +15,6 @@ public class TestAccelerometer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.Translate(input.accelX, 0, -input.accelZ);
+		transform.Translate(input.accelX * speed, 0, -input.accelZ * speed);
 	}
 }

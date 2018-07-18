@@ -37,7 +37,8 @@ public class UIManager : MonoBehaviour
     public void GameRestart()
     {
         //SceneManager.LoadScene(LoadLevel(SceneManager.LoadScene(LoadLevel(m_ThisScene))));
-        Application.LoadLevel(Application.loadedLevel);
+        //Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     //...............................................................

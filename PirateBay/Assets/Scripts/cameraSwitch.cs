@@ -6,13 +6,20 @@ using UnityEngine;
 
 public class cameraSwitch : MonoBehaviour
 {
-    //public new Camera camera;
-    //public new Camera camera2;
-
+    //Camera to use
+    public GameObject mainCamera;
+    //Main Menu Buttons
+    public GameObject AdventureButton;
+    public GameObject options_Button;
+    public GameObject exitGame_Button;
+    public GameObject TitleObject;
+    //Lobby Buttons
     public GameObject rightButton;
     public GameObject midButton;
     public GameObject leftButton;
     public GameObject backButton;
+
+
 
     public float camSpeed = 3.0f;
     
@@ -21,21 +28,23 @@ public class cameraSwitch : MonoBehaviour
     private Vector3 midPoint;
     private Vector3 rightPoint;
     private Vector3 leftPoint;
+    private Vector3 currentPoint;
 
-    private bool mainMenuFinished;
+    public static bool mainMenuFinished;
+    public static bool atStartPosition;
+
     private bool canMoveBack;
     private bool midSelected;
     private bool leftSelected;
     private bool rightSelected;
     private bool CamCanLookAt;
     private bool MenuisActive;
+    private bool SetLobbyButtonsActive;
 
     void Start()
     {
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.lockState = CursorLockMode.None;
-        //Not working, Asking in class for help
-        CamCanLookAt = true;
 
         canMoveBack = false;
         midSelected = false;
@@ -44,11 +53,7 @@ public class cameraSwitch : MonoBehaviour
         mainMenuFinished = false;
         MenuisActive = true;
 
-        lookatPoint = GameObject.Find("LookAt_Point").transform.position;
-        originalPoint = GameObject.Find("CamOriginalPOS").transform.position;
-        rightPoint = GameObject.Find("RightCam_POS").transform.position;
-        midPoint = GameObject.Find("MidCam_POS").transform.position;
-        leftPoint = GameObject.Find("LeftCam_POS").transform.position;
+
               
 
 
@@ -56,32 +61,38 @@ public class cameraSwitch : MonoBehaviour
 
     void Update()
     {
+        lookatPoint = GameObject.Find("LookAt_Point").transform.position;
+        originalPoint = GameObject.Find("CamOriginalPOS").transform.position;
+        rightPoint = GameObject.Find("CityCam").transform.position;
+        midPoint = GameObject.Find("CathedralCam").transform.position;
+        leftPoint = GameObject.Find("VillageCam").transform.position;
 
+        //After main menu is closed this moves camera to start position.
         if (mainMenuFinished == true)
         {
-            //Set Up Coroutine for moving camera to originalPOS
-            
-
+            StartCoroutine(MoveCamToStart());
         }
-
+        //Left Option Selected
         if (leftSelected == true)
         {
-
             StartCoroutine(MovetoLeftCam());
-
         }
+        //Mid(Cathedral) Option Selected
         if(midSelected == true)
         {
             StartCoroutine(MoveToMid());
         }
+        //Right (Liz City) Option Selected
         if(rightSelected == true)
         {
             StartCoroutine(MoveToRight());
         }
+        //After pressing back, moves the camera to start position
         if (canMoveBack == true)
         {
             StartCoroutine(moveCamBack());
         }
+        //When the Main menu is active this rotates the camera around the island.
         if (MenuisActive == true)
         {
             this.transform.LookAt(lookatPoint);
@@ -90,95 +101,116 @@ public class cameraSwitch : MonoBehaviour
 
     }
 
+    //Move the camera to start position after Main Menu has finished
     IEnumerator MoveCamToStart()
     {
+        backButton.SetActive(false);
         transform.position = Vector3.Lerp(this.transform.position, originalPoint, 0.02f);
-        yield return new WaitForSeconds(.8f);
-        backButton.SetActive(true);
-        leftSelected = false;
+        //Set camera rotation
+        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 88.0f, 0.0f);
+        yield return new WaitForSeconds(2.8f);
+        atStartPosition = true;
         yield return null;
     }
 
 
-
     IEnumerator MovetoLeftCam()
     {
-        while (leftSelected == true)
-        {
-            transform.position = Vector3.Lerp(this.transform.position, leftPoint, 0.02f);
-            yield return new WaitForSeconds(.8f);
-            backButton.SetActive(true);
-            leftSelected = false;
-            yield return null;
-        }
+        backButton.SetActive(true);
+        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 26.628f, 0.0f);
+        backButton.SetActive(true);
+        transform.position = Vector3.Lerp(this.transform.position, leftPoint, 0.02f);
+        yield return null;
     }
 
     IEnumerator MoveToMid()
     {
-        while (midSelected == true)
-        {
-            transform.position = Vector3.Lerp(this.transform.position, midPoint, 0.02f);
-            //transform.LookAt(lookatPoint);
-            yield return new WaitForSeconds(.8f);
-            backButton.SetActive(true);
-            midSelected = false;
-            yield return null;
-        }
+        backButton.SetActive(true);
+        transform.position = Vector3.Lerp(this.transform.position, midPoint, 0.02f);
+        //Set camera rotation
+        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 96.188f, 0.0f);
+        yield return null;
     }
 
     IEnumerator MoveToRight()
     {
-        while (rightSelected == true)
-        {
-            transform.position = Vector3.Lerp(this.transform.position, rightPoint, 0.02f);
-            midButton.SetActive(false);
-            //transform.LookAt(lookatPoint);
-            yield return new WaitForSeconds(.8f);
-            backButton.SetActive(true);
-            rightSelected = false;
-            yield return null;
-        }
+        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 116.454f, 0.0f);
+        backButton.SetActive(true);
+        transform.position = Vector3.Lerp(this.transform.position, rightPoint, 0.02f);
+        yield return null;
     }
 
     IEnumerator moveCamBack()
     {
-        while (canMoveBack == true)
-        {
-            transform.position = Vector3.Lerp(this.transform.position, originalPoint, 0.02f);
-            //transform.LookAt(lookatPoint);
-            yield return new WaitForSeconds(.8f);
-            canMoveBack = false;
-            yield return null;
-        }
+        backButton.SetActive(false);
+        transform.position = Vector3.Lerp(this.transform.position, originalPoint, 0.02f);
+
+        yield return new WaitForSeconds(1.5f);
+        canMoveBack = false;
+        yield return null;
     }
 
-
-
-//Move Camera Position
-public void OnRightClicked()
+    IEnumerator OptionsNA()
     {
-        rightSelected = true;
-        leftButton.SetActive(false);
-        rightButton.SetActive(false);
-        midButton.SetActive(false);
-        backButton.SetActive(true);
+        options_Button.GetComponentsInChildren<Text>()[0].text = "Not Available Yet";
+        yield return new WaitForSeconds(1.0f);
+        options_Button.GetComponentsInChildren<Text>()[0].text = "Options";
+        yield return null;
+    }
+
+    
+    /************************************
+    //Main Menu Stuff
+    ************************************/
+    public void OnAdventureClicked()
+    {
+        mainMenuFinished = true;
+        MenuisActive = false;
+        AdventureButton.SetActive(false);
+        options_Button.SetActive(false);
+        exitGame_Button.SetActive(false);
+        TitleObject.SetActive(false);
 
     }
 
+    public void OnOptionsClicked()
+    {
+        StartCoroutine(OptionsNA());
+    }
+
+    public void OnExitClicked()
+    {
+        Application.Quit();
+    }
     public void OnBackClicked()
     {
+        rightSelected = false;
+        midSelected = false;
+        leftSelected = false;
         canMoveBack = true;
         leftButton.SetActive(true);
-        midButton.SetActive(true);
         rightButton.SetActive(true);
+        midButton.SetActive(true);
         backButton.SetActive(false);
+    }
 
+    /*****************************
+    //Lobby Options
+    *****************************/
+    public void OnRightClicked()
+    {
+        rightSelected = true;
 
     }
+
+
 
     public void OnMiddleClicked()
     {
+        rightSelected = false;
         midSelected = true;
+        leftSelected = false;
+        canMoveBack = false;
         leftButton.SetActive(false);
         rightButton.SetActive(false);
         midButton.SetActive(false);
@@ -187,7 +219,10 @@ public void OnRightClicked()
     }
     public void OnLeftClicked()
     {
+        rightSelected = false;
+        midSelected = false;
         leftSelected = true;
+        canMoveBack = false;
         leftButton.SetActive(false);
         rightButton.SetActive(false);
         midButton.SetActive(false);

@@ -3,26 +3,42 @@ using System.Collections;
 
 public class FirstPersonCam : MonoBehaviour
 {
+    public float turnSpeed = 20.0f;
 
-    public float speedH = 2.0f;
-    public float speedV = 2.0f;
+    private Vector3 mouseOrigin;
 
-    private float yaw = 0.0f;
-    private float pitch = 0.0f;
+    private float turnSpeedDefault = 20.0f;
 
-    private void Start()
-    {
-        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 88.0f, 0.0f);
-    }
+    private bool isRotating;
 
+    
     void Update()
     {
-        //if (cameraSwitch.camera2Active == true)
-        //{
-            yaw += speedH * Input.GetAxis("Mouse X");
-            pitch -= speedV * Input.GetAxis("Mouse Y");
 
-            transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
-        //}
+        if (cameraSwitch.atStartPosition == true)
+        {
+
+            if (Input.GetMouseButton(0))
+            {
+                if (!isRotating)
+                {
+                    mouseOrigin = Input.mousePosition;
+                    isRotating = true;
+                }
+
+                Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - mouseOrigin);
+
+                transform.RotateAround(transform.position, transform.right, -pos.y * turnSpeed);
+                transform.RotateAround(transform.position, Vector3.up, pos.x * turnSpeed);
+            }
+
+            if(Input.GetMouseButtonUp(0))
+            {
+                isRotating = false;
+            }
+
+        }
+
     }
+
 }

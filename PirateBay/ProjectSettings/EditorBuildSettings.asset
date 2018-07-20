@@ -5,19 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/_Scenes/Controller.unity
-    guid: 4f053ccdd57dfc745af4d4ceeac72622
   - enabled: 1
+    path: Assets/_Scenes/Network/Controller.unity
+    guid: 4f053ccdd57dfc745af4d4ceeac72622
+  - enabled: 0
     path: Assets/_Scenes/AB_Lobby.unity
     guid: 1d99b8d0c273f4a4d9a7ff6f45e231c8
-  - enabled: 1
-    path: Assets/_Scenes/Fairy Shaker/MainMenu.unity
-    guid: bf70245777065144ea6f68d9d1a2215c
-  - enabled: 1
-    path: Assets/_Scenes/Fairy Shaker/FairyShaker_StoryIntro.unity
-    guid: 40fcfef095add11479991eb6a6eacfd9
-  - enabled: 1
-    path: Assets/_Scenes/Fairy Shaker/MiniGame_FairyDuster.unity
-    guid: 8eb0e7a0290256149ab1fcf9074c3b4b
+  - enabled: 0
+    path: Assets/_Scenes/mg_FairyDuster.unity
+    guid: 26b0703674a492546ae494bdf8e95546
   m_configObjects: {}

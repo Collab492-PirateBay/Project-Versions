@@ -21,8 +21,8 @@ public class NetworkServerUI : MonoBehaviour {
 		GUI.Label(new Rect(20, Screen.height - 35, 100, 20), "Status: " + NetworkServer.active);
 		GUI.Label(new Rect(20, Screen.height - 20, 100, 20), "Connected: " + NetworkServer.connections.Count);
 
-		GUI.Box(new Rect(Screen.width/2 - 100, Screen.height/2 - 25, 250, 50), "Acceleration");
-		GUI.Label(new Rect(Screen.width/2 -85, Screen.height/2 -5, 250, 20), accelX + ", " + accelY + ", " + accelZ);
+		//GUI.Box(new Rect(Screen.width/2 - 100, Screen.height/2 - 25, 250, 50), "Acceleration");
+		//GUI.Label(new Rect(Screen.width/2 -85, Screen.height/2 -5, 250, 20), accelX + ", " + accelY + ", " + accelZ);
 	}
 
 	// Use this for initialization

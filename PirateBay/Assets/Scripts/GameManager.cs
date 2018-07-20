@@ -21,12 +21,15 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    private int currentSceneindex;
-    public void setCurrentScene(int index)
+    private string currentScenename;
+    
+    public void setCurrentScene(string name)
     {
-        currentSceneindex = index;
+        currentScenename = name;
         m_currentState = GameState.Load;
     }
+
+   
 
     public AudioClip Menu_music,
                       Game_music;
@@ -89,8 +92,7 @@ public class GameManager : MonoBehaviour {
         {
             DestroyImmediate(transform.gameObject);
         }
-
-
+        currentScenename = SceneManager.GetActiveScene().name;
     }
 
     private void Update()
@@ -138,7 +140,7 @@ public class GameManager : MonoBehaviour {
 
                 case GameState.Load:
                     {
-                        SceneManager.LoadScene(SceneManager.GetSceneByBuildIndex(currentSceneindex).name);
+                        SceneManager.LoadScene(currentScenename);
                         m_currentState = GameState.Game;
                     }
 

@@ -51,7 +51,8 @@ public class JarOrbit : MonoBehaviour
     private float m_ResultsTextTimer;
     [SerializeField] float m_ResultsTextDur = 0.0f;
 
-
+    private NetworkServerUI networkInput;
+    private Vector3 accelorometerInput;
 
     //.....................................................
     //SHAKING FAIRIES
@@ -85,10 +86,12 @@ public class JarOrbit : MonoBehaviour
     {
         GameObject m_PlayerObject = GameObject.FindGameObjectWithTag("Player");
         m_Player = m_PlayerObject.GetComponent<PlayerMovement>();
+        networkInput =  GameManager.GameManagerInstance.gameObject.GetComponent<NetworkServerUI>();
     }
 
     void Update()
     {
+        accelorometerInput = new Vector3(networkInput.accelX, networkInput.accelY, networkInput.accelZ);
         if (m_Player.m_CanMove == true)
         {
             if (m_HasCaughtAFairy == false)
@@ -120,7 +123,8 @@ public class JarOrbit : MonoBehaviour
                 //SWING JAR INPUT
                 if (m_SwingCooldownTimer <= 0)
                 {
-                    if (Input.GetKey(KeyCode.Space))
+                    //if (Input.GetKey(KeyCode.Space))
+                    if(accelorometerInput.sqrMagnitude > 5)
                     {
                         m_IsSwinging = true;
                         m_IsStopped = false;

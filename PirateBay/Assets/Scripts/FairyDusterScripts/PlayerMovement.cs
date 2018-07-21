@@ -13,9 +13,6 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] public bool m_CanMove = false;
 
-    //PLAYER SETTINGS
-    [SerializeField] private bool m_IsLeftHanded;
-
     //...............................................................
     //GAME TYPES
 
@@ -29,10 +26,11 @@ public class PlayerMovement : MonoBehaviour
     //REQUIREMENT GAME
     //if the game requires number of fairies needed to be caught
     [SerializeField] private bool m_IsRequirementGame;
-    [SerializeField] private int m_FairiesNeededToWin = 0;
+    [SerializeField] private int m_FairiesNeededToWin = 3;
     [SerializeField] public int m_FairiesObtained = 0;
 
     //FREE ROAM GAME
+    //make an exit button
     [SerializeField] private bool m_IsFreeRoamGame;
 
     //...............................................................
@@ -46,25 +44,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float m_TurnSpeed = 27.0f;
     [SerializeField] private float m_TiltSpeed = -27.0f;
 
-    ////...............................................................
-    ////LASER SIGHT / RAYCASTING
-    //[SerializeField] private float m_Range = 10.0f;
-    //private LineRenderer m_LineRenderer = null;
-
-    //SHOT FIRE INDICATOR
-    //public Material[] lasersight_Material = null;
-
-    //COOLDOWN FOR SWINGING OF JAR
-    private float m_CooldownTimer;
-    private float m_CooldownDur = 0.5f;
-
-    //...............................................................
-    //COLLECTING FAIRY DUST
-    private int m_FairyDustGained = 0;
-    public Text m_FairyDustGainedText;
-
-    [SerializeField] private int m_TotalFairyDust;
-    public Text m_TotalFairyDustText;
 
     //...............................................................
     //TIMERS
@@ -78,8 +57,11 @@ public class PlayerMovement : MonoBehaviour
 
     public bool m_GameHasEnded;
 
-    //_______________________________________________________________________
-    //_____________________________________________________________ * START *
+    public UIManager uiManager;
+    private GameManager Game_manager;
+    //............................................................
+    //.................................................. * START *
+
     protected void Start()
     {
         //...............................................................
@@ -102,30 +84,25 @@ public class PlayerMovement : MonoBehaviour
         m_GameHasStarted = false;
         m_GameHasEnded = false;
 
+        GameObject uiManagerObject = GameObject.FindGameObjectWithTag("uiManager");
+        uiManager = uiManagerObject.GetComponent<UIManager>();
 
-
-
+        Game_manager = GameManager.GameManagerInstance;
     }
 
-    //_______________________________________________________________________
-    //____________________________________________________________ * UPDATE *
+    //............................................................
+    //................................................. * UPDATE *
 
     protected void Update()
     {
-        //...............................................................
-        //UI / HUD
-
-        //FAIRY DUST COLLECTION
-        m_FairyDustGainedText.text = "x" + m_FairyDustGained;
-        m_TotalFairyDustText.text = "x" + m_TotalFairyDust;
-
         
-
         //...............................................................
         //TIMERS & GAME START / END
         //GAME TIMER
         if (m_GameHasStarted == true)
         {
+            //m_GameTimerText = GameObject.Find("TimerText").GetComponent<Text>();
+
             if (m_IsTrialGame == true)
             {
                 m_GameTimer -= Time.deltaTime;
@@ -139,6 +116,12 @@ public class PlayerMovement : MonoBehaviour
             if (m_IsTrialGame == true)
             {
                 m_GameHasEnded = true;
+
+                m_CountdownTimer = m_CountdownDur;
+                m_CountdownText.text = "END!";
+
+                StartCoroutine(EndTimer());
+
             }
         }
 
@@ -148,6 +131,11 @@ public class PlayerMovement : MonoBehaviour
             if (m_FairiesObtained == m_FairiesNeededToWin)
             {
                 m_GameHasEnded = true;
+
+                m_CountdownTimer = m_CountdownDur;
+                m_CountdownText.text = "END!";
+
+                StartCoroutine(EndTimer());
             }
         }
 
@@ -168,34 +156,44 @@ public class PlayerMovement : MonoBehaviour
             m_GameTimerText.text = "" + m_FairiesObtained;
         }
 
+        //................................................................................
+        //.............................................. * COUNTDOWN TIMER to begin game *
+        if (uiManager.hasGameStarted == true)
+        {
+            
+            m_CountdownTimer -= Time.deltaTime;
 
-        //COUNTDOWN TIMER to begin game
-        m_CountdownTimer -= Time.deltaTime;
-       
-        if (m_CountdownTimer <= 0)
-        {
-            m_GameHasStarted = true;
-            m_CanMove = true;
+            if (m_CountdownTimer <= 0)
+            {
+                m_GameHasStarted = true;
+                m_CanMove = true;
+            }
         }
 
-        if ((m_CountdownTimer >= 1))
+        if (m_GameHasEnded == false)
         {
-            m_CountdownText.text = (m_CountdownTimer % 60).ToString("00");
-        }
-        else
-            if ((m_CountdownTimer < 1) && (m_CountdownTimer >= 0))
-        {
-            m_CountdownText.text = "GO!";
-        }
-        else
-            if (m_CountdownTimer < 0)
-        {
-            m_CountdownText.text = "";
+            if ((m_CountdownTimer >= 1))
+            {
+                m_CountdownText.text = (m_CountdownTimer % 60).ToString("00");
+            }
+            else
+                if ((m_CountdownTimer < 1) && (m_CountdownTimer >= 0))
+            {
+                m_CountdownText.text = "GO!";
+            }
+            else
+                if (m_CountdownTimer < 0)
+            {
+                m_CountdownText.text = "";
+            }
         }
 
         //DON'T LET THE PLAYER DO ANYTHING UNTIL THE COUNTDOWN TIMER IS UP
         if (m_CanMove == true)
         {
+            m_GameTimerText = GameObject.Find("GameTimerText").GetComponent<Text>();
+
+#if UNITY_EDITOR
             //...............................................................
             //MOVEMENT CONTROLS
             Vector3 m_Velocity;
@@ -269,26 +267,20 @@ public class PlayerMovement : MonoBehaviour
                 Camera.main.transform.Rotate(m_TiltAngle, 0.0f, 0.0f);
             }
 
-            //...............................................................
-            //COOLDOWN FOR SWINGING JAR
-            m_CooldownTimer -= Time.deltaTime;
-            if (m_CooldownTimer <= 0)
-            {
-                m_CooldownTimer = 0;
-            }
-
-
-            //...............................................................
-            //MENU CONTROLS
-            //QUIT GAME press "BACKQUOTE" Key
-            //if (Input.GetKey(KeyCode.BackQuote))
-            //{
-            //    UnityEditor.EditorApplication.isPlaying = false;
-            //}
 
             m_RigidBody.velocity = m_Velocity;
+#endif
+
         }
 
+     
+
+    }
+
+    IEnumerator EndTimer()
+    {
+        yield return new WaitForSeconds(5.0f);
+        Game_manager.setCurrentScene("AB_Lobby");
     }
 
 }

@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class JarOrbit : MonoBehaviour
 {
-    //make the shake speed equal to the force of the accilometer and have a collision trigger on the top and bottom of jar
-
     [SerializeField] public bool m_CanSwing = false;
     public PlayerMovement m_Player;
 
@@ -18,7 +16,6 @@ public class JarOrbit : MonoBehaviour
     [SerializeField] private float m_SwingRate = 0.0f;
     [SerializeField] private float m_RetractionRate = 0.0f;
 
-    //[SerializeField] private bool m_CanSwing = true;
     [SerializeField] private bool m_IsSwinging = false;
     [SerializeField] private bool m_IsRetracting = false;
     [SerializeField] private bool m_IsStopped = true;
@@ -26,46 +23,30 @@ public class JarOrbit : MonoBehaviour
     [SerializeField] private float m_ScreenBoundaryLeft = 0.0f;
     [SerializeField] private float m_ScreenBoundaryRight = 0.0f;
 
-    //don't think we need this... safetydist
-    [SerializeField] private float m_CanSwingSafetyDist = 0.0f;
-
-    //don't think we need this... swingpos
-    [SerializeField] private float m_swingpos = 0.0f;
-
     //.....................................................
     //CAPTURING FAIRIES
     private int m_CatchRatioMax = 6;
     private int m_CatchRatioMin;
     private int m_CatchRatioPicker;
 
-    //how much dust that you can collect per shake (determined by the fairy type/color)
+    //REPLACE DUST FALL MIN WITH THE POINT MULTIPLIER
     private int m_DustFallMin;
 
-    //add this modifier to the Dust Fall Minimum to create the max dust that can be awarded
-    [SerializeField] private int m_DustFallRangeModifier = 0;
-
     private float m_SwingCooldownTimer;
-    private float m_SwingCooldownDur = 0.0f;
+    [SerializeField] private float m_SwingCooldownDur = 0.0f;
 
-    public Text m_SwingResultsText;
-    private float m_ResultsTextTimer;
-    [SerializeField] float m_ResultsTextDur = 0.0f;
-
-    private NetworkServerUI networkInput;
-    private Vector3 accelorometerInput;
+    //Just indicates to player if they caught the fairy, how rare it is, and how many points they get
+    [SerializeField] private Text m_NotifierText;
+    [SerializeField] private float m_NotifierTimer;
+    [SerializeField] float m_NotifierDur = 0.0f;
 
     //.....................................................
     //SHAKING FAIRIES
     [SerializeField] public bool m_HasCaughtAFairy = false;
     [SerializeField] private bool m_CanShake = false;
 
-    public Text m_HintToShakeText;
-    private float m_HintToShakeTimer;
-    [SerializeField] private float m_HintToShakeDur;
 
     [SerializeField] private float m_ShakeSpeed = 0.0f;
-    [SerializeField] private float m_ShakeMaxSpeed = 0.0f;
-
 
     [SerializeField] private bool m_IsMovingUp = false;
     [SerializeField] private bool m_IsMovingDown = false;
@@ -73,30 +54,79 @@ public class JarOrbit : MonoBehaviour
     [SerializeField] private bool m_CanMoveUp = false;
     [SerializeField] private bool m_CanMoveDown = false;
 
-    [SerializeField] private bool m_IsInTopZone;
-    [SerializeField] private bool m_IsInBottom;
-    [SerializeField] private bool m_IsInMiddleZone;
+    public string fairyType;
 
-    [SerializeField] private float m_ScreenBoundaryTop = 0.0f;
-    [SerializeField] private float m_ScreenBoundaryBottom = 0.0f;
+    //SHAKE SETTINGS
 
+    [SerializeField] private bool m_ShakingHasStarted = false;
 
+    [SerializeField] private float m_ShakeTimer;
+    [SerializeField] private float m_ShakeDur = 0.0f;
+
+    [SerializeField] private float m_ShakeForceUp;
+    [SerializeField] private float m_ShakeForceDown;
+
+    //SCORING SYSTEM
+    [SerializeField] private float m_PointsMultiplier = 0.0f;
+    [SerializeField] private float m_PlusPoints = 0.0f;
+
+    [SerializeField] private float m_PointsEarnedFromThisFairy = 0.0f;
+
+    public float m_TotalScore = 0.0f;
+    public Text m_TotalScoreText;
+    public Text m_TotalScoreTextShadow;
+
+    public Animator m_ShakeAnimator;
+    [SerializeField] private float m_RhythmTimer = 0.0f;
+    [SerializeField] private float m_RhythmDur = 0.0f;
+
+    private NetworkServerUI netInput;
+    private Vector3 accelerometerInput;
+
+    //............................................................
+    //.................................................. * START *
 
     void Start()
     {
         GameObject m_PlayerObject = GameObject.FindGameObjectWithTag("Player");
         m_Player = m_PlayerObject.GetComponent<PlayerMovement>();
-        networkInput =  GameManager.GameManagerInstance.gameObject.GetComponent<NetworkServerUI>();
+
+        m_TotalScoreText = GameObject.Find("TotalScore").GetComponent<Text>();
+        m_TotalScoreTextShadow = GameObject.Find("TotalScoreShadow").GetComponent<Text>();
+
+        m_NotifierText = GameObject.Find("NotifierText").GetComponent<Text>();
+
+        netInput = GameManager.GameManagerInstance.gameObject.GetComponent<NetworkServerUI>();
     }
+
+    //............................................................
+    //................................................. * UPDATE *
 
     void Update()
     {
-        accelorometerInput = new Vector3(networkInput.accelX, networkInput.accelY, networkInput.accelZ);
+        
+        m_TotalScoreText.text = "" + m_TotalScore;
+        m_TotalScoreTextShadow.text = m_TotalScoreText.text;
+
+        accelerometerInput = new Vector3(netInput.accelX, netInput.accelY, netInput.accelZ);
+
         if (m_Player.m_CanMove == true)
         {
+            
+            m_NotifierTimer -= Time.deltaTime;
+
+            if (m_NotifierTimer <= 0)
+            {
+                m_NotifierTimer = 0;
+                m_NotifierText.text = "";
+            }
+
             if (m_HasCaughtAFairy == false)
             {
+                m_ShakeAnimator.enabled = false;
+
                 m_SwingCooldownTimer -= Time.deltaTime;
+
                 if (m_SwingCooldownTimer <= 0)
                 {
                     m_SwingCooldownTimer = 0;
@@ -117,28 +147,48 @@ public class JarOrbit : MonoBehaviour
                 Vector3 aRetractionVector;
                 aRetractionVector = aRetractionAmount * Vector3.up;
 
-                m_swingpos = transform.localRotation.y;
-
 
                 //SWING JAR INPUT
                 if (m_SwingCooldownTimer <= 0)
                 {
-                    //if (Input.GetKey(KeyCode.Space))
-                    if(accelorometerInput.sqrMagnitude > 5)
+                    if (runInEditMode)
                     {
-                        m_IsSwinging = true;
-                        m_IsStopped = false;
+                        if (Input.GetKey(KeyCode.Space))
+                            if (accelerometerInput.sqrMagnitude > 5)
+                            {
+                                m_IsSwinging = true;
+                                m_IsStopped = false;
+                            }
+                            else
+                            {
+                                m_IsSwinging = false;
+                            }
+
+                        if (Input.GetKeyUp(KeyCode.Space))
+                        {
+                            m_IsRetracting = true;
+                            m_IsSwinging = false;
+                            m_SwingCooldownTimer = m_SwingCooldownDur;
+                        }
                     }
                     else
                     {
-                        m_IsSwinging = false;
-                    }
+                        if (accelerometerInput.sqrMagnitude > 5)
+                        {
+                            m_IsSwinging = true;
+                            m_IsStopped = false;
+                        }
+                        else
+                        {
+                            m_IsSwinging = false;
+                        }
 
-                    if (Input.GetKeyUp(KeyCode.Space))
-                    {
-                        m_IsRetracting = true;
-                        m_IsSwinging = false;
-                        m_SwingCooldownTimer = m_SwingCooldownDur;
+                        if (accelerometerInput.sqrMagnitude < 1)
+                        {
+                            m_IsRetracting = true;
+                            m_IsSwinging = false;
+                            m_SwingCooldownTimer = m_SwingCooldownDur;
+                        }
                     }
                 }
 
@@ -172,12 +222,6 @@ public class JarOrbit : MonoBehaviour
                         m_IsRetracting = false;
                     }
 
-                    //ABLE TO SWING SAFETY DISTANCE
-                    //want the player to be able to swing again without having to wait for the jar to go all the way back.
-                    if (transform.localRotation.y <= m_CanSwingSafetyDist)
-                    {
-                        //m_CanSwing = true;
-                    }
                 }
 
 
@@ -186,47 +230,8 @@ public class JarOrbit : MonoBehaviour
                 {
                     transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                 }
-            }
 
-            //...............................................................
-            //............................................... * TEXT TIMERS *
 
-            //COME BACK TO THE HINTS, may need to create a boolean for each for when the text have been activated
-            //HINTS TEXT
-            //m_HintToShakeTimer -= Time.deltaTime;
-
-            //if (m_HintToShakeTimer <= 0)
-            //{
-            //    m_HintToShakeTimer = 0;
-            //    m_HintToShakeText.text = "";
-            //}
-
-            //if (m_HintToShakeTimer > 0)
-            //{
-            //    if (m_ResultsTextTimer <= 0)
-            //    {
-            //        if (m_HasCaughtAFairy == true)
-            //        {
-            //            m_HintToShakeText.text = "Shake'M Up Good!";
-            //        }
-            //        else if (m_HasCaughtAFairy == false)
-            //        {
-            //            m_HintToShakeText.text = "Swing 'N Catch Me A Fairy!";
-            //        }
-            //    }
-            //}
-
-            m_ResultsTextTimer -= Time.deltaTime;
-
-            if (m_ResultsTextTimer <= 0)
-            {
-                m_ResultsTextTimer = 0;
-                m_SwingResultsText.text = "";
-
-                //if (m_HintToShakeTimer <= 0)
-                //{
-                //    m_HintToShakeTimer = m_HintToShakeDur;
-                //}
             }
 
             //...............................................................
@@ -234,6 +239,8 @@ public class JarOrbit : MonoBehaviour
 
             if (m_HasCaughtAFairy == true)
             {
+                m_ShakeAnimator.enabled = true;
+
                 //SWING VARIABLES
                 float aShakeAmount;
                 aShakeAmount = m_ShakeSpeed * Time.deltaTime;
@@ -241,71 +248,183 @@ public class JarOrbit : MonoBehaviour
                 Vector3 aShakeVector;
                 aShakeVector = aShakeAmount * Vector3.right;
 
-                //m_shakepos = transform.localRotation.y;
 
 
-                //SHAKE INPUT
-                if (Input.GetKey(KeyCode.UpArrow))
+
+                //...............................................................
+                //NEW SHAKE
+
+                //SHAKE TIMER
+                m_ShakeTimer -= Time.deltaTime;
+                if (m_ShakeTimer <= 0)
                 {
-                    if (m_CanMoveUp == true)
+                    m_ShakeTimer = 0;
+                }
+
+                //DEATH OF FAIRY --> RESET SETTINGS TO CATCH AGAIN
+                if (m_ShakingHasStarted == true)
+                {
+                    
+                    if (m_ShakeTimer <= 0)
                     {
-                        m_IsMovingUp = true;
-                        m_IsMovingDown = false;
+                        m_NotifierTimer = m_NotifierDur;
+                        m_NotifierText.text = "" + m_PointsEarnedFromThisFairy;
+
+                        if (m_HasCaughtAFairy == true)
+                        {
+                            m_CanSwing = true;
+                            fairyType = "";
+                            m_CanShake = false;
+                            m_ShakingHasStarted = false;
+                            m_PlusPoints = 0;
+                            m_PointsEarnedFromThisFairy = 0;
+                            m_IsStopped = true;
+                            m_IsMovingUp = false;
+                            m_IsMovingDown = false;
+
+                            //IF WIN CONDITION IS BASED ON A CATCH REQUIREMENT
+                            m_Player.m_FairiesObtained += 1;
+
+                            m_HasCaughtAFairy = false;
+                        }
                     }
                 }
-                else if (Input.GetKey(KeyCode.DownArrow))
+
+                //gives the player a very short grace period before reverting the jar back to default position
+                m_RhythmTimer -= Time.deltaTime;
+                if (m_RhythmTimer <= 0)
                 {
-                    if (m_CanMoveDown == true)
+                    m_RhythmTimer = 0;
+                }
+
+                //SHAKE UP
+                if (m_IsMovingDown == false)
+                {
+                    if (runInEditMode)
                     {
-                        m_IsMovingUp = false;
-                        m_IsMovingDown = true;
+                        if (accelerometerInput.sqrMagnitude > 5 && accelerometerInput.y > 0)
+                        {
+                            m_ShakeAnimator.SetBool("IsGoingUp", true);
+                            m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
+                            m_IsMovingUp = true;
+                            //m_ShakeForceUp = accelometer force y
+                            m_PlusPoints = m_PointsMultiplier * m_ShakeForceUp;
+                            m_PointsEarnedFromThisFairy += m_PlusPoints;
+                            m_TotalScore += m_PlusPoints;
+
+                            if (m_ShakingHasStarted == false)
+                            {
+                                m_ShakingHasStarted = true;
+                                m_ShakeTimer = m_ShakeDur;
+                            }
+                            //might need some code to recognize a stop for the accelometer because of the first if statement about moving down?
+                        }
+                        else if (Input.GetKeyUp(KeyCode.UpArrow))
+                        {
+                            m_IsMovingUp = false;
+                            m_ShakeAnimator.SetBool("IsGoingUp", false);
+                            m_RhythmTimer = m_RhythmDur;
+                        }
+                    }
+                    else
+                    {
+                        //recognize accelerometer input & direction 
+                        if (accelerometerInput.sqrMagnitude > 5 && accelerometerInput.y > 0)
+                        {
+                            m_ShakeAnimator.SetBool("IsGoingUp", true);
+                            m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
+                            m_IsMovingUp = true;
+                            //m_ShakeForceUp = accelometer force y
+                            m_PlusPoints = m_PointsMultiplier * m_ShakeForceUp;
+                            m_PointsEarnedFromThisFairy += m_PlusPoints;
+                            m_TotalScore += m_PlusPoints;
+
+                            if (m_ShakingHasStarted == false)
+                            {
+                                m_ShakingHasStarted = true;
+                                m_ShakeTimer = m_ShakeDur;
+                            }
+                            //might need some code to recognize a stop for the accelometer because of the first if statement about moving down?
+                        }
+                        
+                        else if (accelerometerInput.sqrMagnitude < 1)
+                        {
+                            m_IsMovingUp = false;
+                            m_ShakeAnimator.SetBool("IsGoingUp", false);
+                            m_RhythmTimer = m_RhythmDur;
+                        }
+                    }
+                }
+
+                //SHAKE DOWN
+                if (m_IsMovingUp == false)
+                {
+                    if (runInEditMode)
+                    {
+                        if (Input.GetKeyDown(KeyCode.DownArrow)) //if y axis <= m_DownShakeForceRequirement
+                        {
+                            m_ShakeAnimator.SetBool("IsGoingDown", true);
+                            m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
+                            m_IsMovingDown = true;
+                            //m_ShakeForceDown = accelometer force -y
+                            m_PlusPoints = m_PointsMultiplier * m_ShakeForceDown;
+                            m_PointsEarnedFromThisFairy += m_PlusPoints;
+                            m_TotalScore += m_PlusPoints;
+
+                            if (m_ShakingHasStarted == false)
+                            {
+                                m_ShakingHasStarted = true;
+                                m_ShakeTimer = m_ShakeDur;
+                            }
+                        }
+                        else if (Input.GetKeyUp(KeyCode.DownArrow))
+                        {
+                            m_IsMovingDown = false;
+                            m_ShakeAnimator.SetBool("IsGoingDown", false);
+                            m_RhythmTimer = m_RhythmDur;
+                        }
+                    }
+                    else
+                    {
+                        //recognize accelerometer input & direction 
+                        if (accelerometerInput.sqrMagnitude > 5 && accelerometerInput.y < 0)
+                        {
+                            m_ShakeAnimator.SetBool("IsGoingDown", true);
+                            m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
+                            m_IsMovingDown = true;
+                            //m_ShakeForceDown = accelometer force -y
+                            m_PlusPoints = m_PointsMultiplier * m_ShakeForceDown;
+                            m_PointsEarnedFromThisFairy += m_PlusPoints;
+                            m_TotalScore += m_PlusPoints;
+
+                            if (m_ShakingHasStarted == false)
+                            {
+                                m_ShakingHasStarted = true;
+                                m_ShakeTimer = m_ShakeDur;
+                            }
+                        }
+                        else if (accelerometerInput.sqrMagnitude < 1)
+                        {
+                            m_IsMovingDown = false;
+                            m_ShakeAnimator.SetBool("IsGoingDown", false);
+                            m_RhythmTimer = m_RhythmDur;
+                        }
+                    }
+                }
+
+
+                if ((m_IsMovingUp == false) && (m_IsMovingDown == false))
+                {
+                    if (m_RhythmTimer <= 0)
+                    {
+                        m_ShakeAnimator.SetBool("IsRevertingBackToDefault", true);
                     }
                 }
                 else
                 {
-                    m_IsMovingUp = false;
-                    m_IsMovingDown = false;
+                    m_ShakeAnimator.SetBool("IsRevertingBackToDefault", false);
                 }
 
-                //SHAKE RESTRAINTS
-
-                ////ATTEMPT TO STOP AT TOP OF SCREEN
-                //if (transform.localRotation.x <= m_ScreenBoundaryTop)
-                //{
-                //    m_CanMoveUp = false;
-                //    transform.localRotation = transform.localRotation;
-                //}
-                //else if (transform.localRotation.x > m_ScreenBoundaryTop)
-                //{
-                //    m_CanMoveUp = true;
-                //}
-
-                ////ATTEMPT TO STOP AT BOTTOM OF SCREEN
-                //if (transform.localRotation.x >= m_ScreenBoundaryBottom)
-                //{
-                //    m_CanMoveDown = false;
-                //    transform.localRotation = transform.localRotation;
-                //}
-                //else if (transform.localRotation.x < m_ScreenBoundaryBottom)
-                //{
-                //    m_CanMoveDown = true;
-                //}
-
-
-                //SWING JAR OUTPUT
-                if (m_IsMovingUp == true)
-                {
-                    print(aShakeVector + "up");
-                    //jar orbits / shakes up
-                    transform.Rotate(-aShakeVector);
-                }
-
-                if (m_IsMovingDown == true)
-                {
-                    print(aShakeVector + "down");
-                    //jar orbits / shakes down
-                    transform.Rotate(aShakeVector);
-                }
             }
         }
     }
@@ -336,8 +455,8 @@ public class JarOrbit : MonoBehaviour
                     aFairy.m_CatchRateAttemptBonus += 1;
                     m_IsRetracting = true;
                     m_SwingCooldownTimer = m_SwingCooldownDur;
-                    m_ResultsTextTimer = m_ResultsTextDur;
-                    m_SwingResultsText.text = "MISS!";
+                    m_NotifierTimer = m_NotifierDur;
+                    m_NotifierText.text = "MISS!";
                     aFairy.m_IsScared = true;
                 }
                 else if (m_CatchRatioPicker == 5)
@@ -346,31 +465,40 @@ public class JarOrbit : MonoBehaviour
                     m_Player.m_FairiesObtained += 1;
                     m_CanMoveUp = true;
                     m_CanMoveDown = true;
+                    m_PointsEarnedFromThisFairy = 0;
 
                     //DETERMINING FAIRY'S WORTH/VALUE IN DUST PER SHAKE
                     if (aFairy.m_FairyIsRed)
                     {
+                        fairyType = "Red";
                         m_DustFallMin = 250;
-                        m_ResultsTextTimer = m_ResultsTextDur;
-                        m_SwingResultsText.text = "DON'T BE LETT'N DIS ONE GO TO WASTE!";
+                        m_NotifierTimer = m_NotifierDur;
+                        m_NotifierText.text = "SUPER RARE!";
+                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
                     }
                     else if (aFairy.m_FairyIsGreen)
                     {
+                        fairyType = "Green";
                         m_DustFallMin = 200;
-                        m_ResultsTextTimer = m_ResultsTextDur;
-                        m_SwingResultsText.text = "THOSE ONES'R RARE!";
+                        m_NotifierTimer = m_NotifierDur;
+                        m_NotifierText.text = "RARE!";
+                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
                     }
                     else if (aFairy.m_FairyIsBlue)
                     {
+                        fairyType = "Blue";
                         m_DustFallMin = 150;
-                        m_ResultsTextTimer = m_ResultsTextDur;
-                        m_SwingResultsText.text = "THAT BE AN INTEREST'N FAIRY!";
+                        m_NotifierTimer = m_NotifierDur;
+                        m_NotifierText.text = "SPECIAL!";
+                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
                     }
                     else if (aFairy.m_FairyIsYellow)
                     {
+                        fairyType = "Yellow";
                         m_DustFallMin = 100;
-                        m_ResultsTextTimer = m_ResultsTextDur;
-                        m_SwingResultsText.text = "YOU GOT A PLAIN'OL FAIRY!";
+                        m_NotifierTimer = m_NotifierDur;
+                        m_NotifierText.text = "OKAY!";
+                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
                     }
 
                     aFairy.gameObject.SetActive(false);

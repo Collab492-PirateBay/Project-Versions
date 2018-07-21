@@ -80,8 +80,13 @@ public class JarOrbit : MonoBehaviour
     [SerializeField] private float m_RhythmTimer = 0.0f;
     [SerializeField] private float m_RhythmDur = 0.0f;
 
+    //Variables for Controller input
     private NetworkServerUI netInput;
     private Vector3 accelerometerInput;
+
+    //Enables control with keyboard
+    [SerializeField]
+    private bool keyboardControl;
 
     //............................................................
     //.................................................. * START *
@@ -96,6 +101,7 @@ public class JarOrbit : MonoBehaviour
 
         m_NotifierText = GameObject.Find("NotifierText").GetComponent<Text>();
 
+        //Sets Network input
         netInput = GameManager.GameManagerInstance.gameObject.GetComponent<NetworkServerUI>();
     }
 
@@ -108,6 +114,7 @@ public class JarOrbit : MonoBehaviour
         m_TotalScoreText.text = "" + m_TotalScore;
         m_TotalScoreTextShadow.text = m_TotalScoreText.text;
 
+        //Gets Accelerometer input from networked client
         accelerometerInput = new Vector3(netInput.accelX, netInput.accelY, netInput.accelZ);
 
         if (m_Player.m_CanMove == true)
@@ -151,7 +158,7 @@ public class JarOrbit : MonoBehaviour
                 //SWING JAR INPUT
                 if (m_SwingCooldownTimer <= 0)
                 {
-                    if (runInEditMode)
+                    if (keyboardControl)
                     {
                         if (Input.GetKey(KeyCode.Space))
                             if (accelerometerInput.sqrMagnitude > 5)
@@ -300,7 +307,7 @@ public class JarOrbit : MonoBehaviour
                 //SHAKE UP
                 if (m_IsMovingDown == false)
                 {
-                    if (runInEditMode)
+                    if (keyboardControl)
                     {
                         if (accelerometerInput.sqrMagnitude > 5 && accelerometerInput.y > 0)
                         {
@@ -359,7 +366,7 @@ public class JarOrbit : MonoBehaviour
                 //SHAKE DOWN
                 if (m_IsMovingUp == false)
                 {
-                    if (runInEditMode)
+                    if (keyboardControl)
                     {
                         if (Input.GetKeyDown(KeyCode.DownArrow)) //if y axis <= m_DownShakeForceRequirement
                         {

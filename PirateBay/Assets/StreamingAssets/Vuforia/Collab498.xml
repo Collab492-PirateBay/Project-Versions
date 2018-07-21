@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
+    <ImageTarget name="Badges6" size="1.000000 1.087629" />
+    <ImageTarget name="Badges2" size="1.000000 0.768908" />
+    <ImageTarget name="Badges1" size="1.000000 0.842640" />
     <ImageTarget name="Badges5" size="1.000000 1.013216" />
   </Tracking>
 </QCARConfig>

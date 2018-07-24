@@ -13,6 +13,7 @@ public class NetworkServerUI : MonoBehaviour {
 	public float accelX;
 	public float accelY;
 	public float accelZ;
+    public float accelSqrd;
 	
 	void OnGUI()
 	{
@@ -53,8 +54,8 @@ public class NetworkServerUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-		
+
+        accelSqrd = (new Vector3(accelX, accelY, accelZ)).sqrMagnitude;
 
 	}
 }

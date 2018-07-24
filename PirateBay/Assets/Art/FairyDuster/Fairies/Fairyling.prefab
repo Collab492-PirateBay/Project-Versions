@@ -378,10 +378,10 @@ MonoBehaviour:
   m_TurnDegrees: 0
   m_TopLimit: 2.25
   m_BottomLimit: 0.25
-  m_RightLimit: 20
-  m_LeftLimit: -20
-  m_ForwardLimit: 36
-  m_BackLimit: -8
+  m_RightLimit: 2
+  m_LeftLimit: -2
+  m_ForwardLimit: 2
+  m_BackLimit: -2
   m_MoveTimer: 0
   m_MoveDur: 0
   m_MoveDurMax: 1.8

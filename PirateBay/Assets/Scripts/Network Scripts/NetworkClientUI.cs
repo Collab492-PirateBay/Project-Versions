@@ -31,8 +31,7 @@ public class NetworkClientUI : MonoBehaviour {
 	void Start () {
 		//NetworkDiscovery.StartAsClient();
 		client = new NetworkClient();
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
-    }
+	}
 	
 	void Connect(string connectAddress)
 	{

@@ -586,6 +586,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CanSwing: 0
   m_Player: {fileID: 2136903657}
+  m_CatchBox: {fileID: 0}
+  m_PlayerEstablishedMaxSwingForce: 0
+  m_SwingForceLevel_3: 0
+  m_SwingForceLevel_2: 0
+  m_SwingForceLevel_1: 0
   m_SwingRate: 244.21
   m_RetractionRate: 150
   m_IsSwinging: 0
@@ -1453,6 +1458,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CanSwing: 0
   m_Player: {fileID: 0}
+  m_CatchBox: {fileID: 0}
+  m_PlayerEstablishedMaxSwingForce: 0
+  m_SwingForceLevel_3: 0
+  m_SwingForceLevel_2: 0
+  m_SwingForceLevel_1: 0
   m_SwingRate: 200
   m_RetractionRate: 150
   m_IsSwinging: 0
@@ -2806,6 +2816,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CanSwing: 0
   m_Player: {fileID: 2136903657}
+  m_CatchBox: {fileID: 0}
+  m_PlayerEstablishedMaxSwingForce: 0
+  m_SwingForceLevel_3: 0
+  m_SwingForceLevel_2: 0
+  m_SwingForceLevel_1: 0
   m_SwingRate: 244.21
   m_RetractionRate: 150
   m_IsSwinging: 0
@@ -3149,6 +3164,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CanSwing: 0
   m_Player: {fileID: 0}
+  m_CatchBox: {fileID: 0}
+  m_PlayerEstablishedMaxSwingForce: 0
+  m_SwingForceLevel_3: 0
+  m_SwingForceLevel_2: 0
+  m_SwingForceLevel_1: 0
   m_SwingRate: 200
   m_RetractionRate: 150
   m_IsSwinging: 0
@@ -4967,6 +4987,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CanSwing: 0
   m_Player: {fileID: 0}
+  m_CatchBox: {fileID: 0}
+  m_PlayerEstablishedMaxSwingForce: 0
+  m_SwingForceLevel_3: 0
+  m_SwingForceLevel_2: 0
+  m_SwingForceLevel_1: 0
   m_SwingRate: 200
   m_RetractionRate: 150
   m_IsSwinging: 0
@@ -5289,6 +5314,107 @@ Transform:
   m_PrefabParentObject: {fileID: 4357617146553432, guid: 10188db88aa7f4dc8b2ba81306c1c94a,
     type: 2}
   m_PrefabInternal: {fileID: 278407850}
+--- !u!1 &1013198625
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1013198630}
+  - component: {fileID: 1013198629}
+  - component: {fileID: 1013198628}
+  - component: {fileID: 1013198627}
+  - component: {fileID: 1013198626}
+  m_Layer: 0
+  m_Name: CatchBox
+  m_TagString: CatchBox
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1013198626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1013198625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188f838fc2f74b3489a4dc4585466f2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FairyIsInCatchZone: 0
+  m_PlayerIsInShakeMode: 0
+  m_SwingIsStrongEnough: 0
+  m_FairyCaughtID: 0
+--- !u!65 &1013198627
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1013198625}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1013198628
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1013198625}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
+  m_Materials:
+  - {fileID: 2100000, guid: 1685ac0d6d6bd4b62a3084f1939e24d0, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &1013198629
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1013198625}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1013198630
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1013198625}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.21999992, z: 0.8780001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1099867687}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1025144449
 GameObject:
   m_ObjectHideFlags: 0
@@ -5677,6 +5803,7 @@ Transform:
   m_Children:
   - {fileID: 853621922}
   - {fileID: 1727676253}
+  - {fileID: 1013198630}
   m_Father: {fileID: 1981003801}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7358,6 +7485,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CanSwing: 0
   m_Player: {fileID: 0}
+  m_CatchBox: {fileID: 0}
+  m_PlayerEstablishedMaxSwingForce: 0
+  m_SwingForceLevel_3: 0
+  m_SwingForceLevel_2: 0
+  m_SwingForceLevel_1: 0
   m_SwingRate: 200
   m_RetractionRate: 150
   m_IsSwinging: 0
@@ -7512,15 +7644,10 @@ MonoBehaviour:
   m_MoveDur: 0
   m_MoveDurMax: 1.8
   m_MoveDurMin: 0.7
-  m_CatchRateMin: 0
-  m_CatchRateBase: 0
-  m_CatchRateAttemptBonus: 0
   m_FairyIsRed: 0
   m_FairyIsGreen: 0
   m_FairyIsBlue: 0
   m_FairyIsYellow: 0
-  m_FairyTypeChangeDurationMin: 5
-  m_FairyTypeChangeDurationMax: 12
   m_FairyColorMaterial:
   - {fileID: 2100000, guid: ce87185cc28aa44c498f52c0138889d3, type: 2}
   - {fileID: 2100000, guid: 1bb3298cdf6ef46cf90e5674664d1e93, type: 2}
@@ -8470,7 +8597,7 @@ MonoBehaviour:
   m_ParrotMarker: 0
   m_MarkerNumber: 0
   m_CurrentMarkerNumber: 0
-  m_IsActive: 0
+  m_IsActive: 1
   m_FairyPrefab: {fileID: 114679967407611716, guid: 0e226b3108f11664ab464f5632aa29de,
     type: 2}
   m_FairyPlacementX: 0
@@ -8903,15 +9030,10 @@ MonoBehaviour:
   m_MoveDur: 0
   m_MoveDurMax: 1.8
   m_MoveDurMin: 0.7
-  m_CatchRateMin: 0
-  m_CatchRateBase: 0
-  m_CatchRateAttemptBonus: 0
   m_FairyIsRed: 0
   m_FairyIsGreen: 0
   m_FairyIsBlue: 0
   m_FairyIsYellow: 0
-  m_FairyTypeChangeDurationMin: 5
-  m_FairyTypeChangeDurationMax: 12
   m_FairyColorMaterial:
   - {fileID: 2100000, guid: ce87185cc28aa44c498f52c0138889d3, type: 2}
   - {fileID: 2100000, guid: 1bb3298cdf6ef46cf90e5674664d1e93, type: 2}
@@ -9131,6 +9253,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CanSwing: 0
   m_Player: {fileID: 0}
+  m_CatchBox: {fileID: 0}
+  m_PlayerEstablishedMaxSwingForce: 0
+  m_SwingForceLevel_3: 0
+  m_SwingForceLevel_2: 0
+  m_SwingForceLevel_1: 0
   m_SwingRate: 200
   m_RetractionRate: 150
   m_IsSwinging: 0

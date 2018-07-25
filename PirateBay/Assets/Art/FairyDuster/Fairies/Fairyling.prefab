@@ -315,7 +315,7 @@ BoxCollider:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1724808333177742}
   m_Material: {fileID: 13400000, guid: 96216658c0d33e9409484cd76f4a3ac7, type: 2}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 200, y: 200, z: 210}
@@ -382,19 +382,14 @@ MonoBehaviour:
   m_LeftLimit: -2
   m_ForwardLimit: 2
   m_BackLimit: -2
-  m_MoveTimer: 0
+  m_MoveTimer: 1
   m_MoveDur: 0
   m_MoveDurMax: 1.8
   m_MoveDurMin: 0.7
-  m_CatchRateMin: 0
-  m_CatchRateBase: 0
-  m_CatchRateAttemptBonus: 0
   m_FairyIsRed: 0
   m_FairyIsGreen: 0
   m_FairyIsBlue: 0
   m_FairyIsYellow: 0
-  m_FairyTypeChangeDurationMin: 5
-  m_FairyTypeChangeDurationMax: 12
   m_FairyColorMaterial:
   - {fileID: 2100000, guid: f9fc82e95ae2d47e4a6a6cd099a66be9, type: 2}
   - {fileID: 2100000, guid: a03b86b1406fc42f6959fd170a2b9e0f, type: 2}

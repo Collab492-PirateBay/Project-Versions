@@ -230,7 +230,7 @@ public class FairyMovement : MonoBehaviour
             m_MovingInLastDirection = false;
             m_CurrentDir = Random.Range(1, 5);
             m_CurrentDirY = Random.Range(1, 3);
-            m_MoveTimer = 0;
+            m_MoveTimer = m_MoveDur;
         }
 
 
@@ -282,7 +282,7 @@ public class FairyMovement : MonoBehaviour
         //MOVE RESTRICTIONS / BOUNDARIES
         //make sure that the fairies don't leave the arena, incase we end up...
         //using them in swarms and they individually wouldn't have box colliders...
-
+/*
         //TOP LIMIT
         if (transform.position.y >= m_TopLimit)
         {
@@ -325,7 +325,7 @@ public class FairyMovement : MonoBehaviour
             m_CurrentDir = 1;
             m_MoveTimer = 0;
         }
-
+*/
         //RIGIDBODY FOLLOWUP W/VELOCITY
         m_RigidBody.velocity = a_Velocity;
 

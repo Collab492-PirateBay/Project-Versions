@@ -194,6 +194,7 @@ public class PlayerMovement : MonoBehaviour
             m_GameTimerText = GameObject.Find("GameTimerText").GetComponent<Text>();
 
 #if UNITY_EDITOR
+            /*
             //...............................................................
             //MOVEMENT CONTROLS
             Vector3 m_Velocity;
@@ -269,6 +270,7 @@ public class PlayerMovement : MonoBehaviour
 
 
             m_RigidBody.velocity = m_Velocity;
+            */
 #endif
 
         }

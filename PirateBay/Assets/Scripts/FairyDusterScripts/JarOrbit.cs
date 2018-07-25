@@ -199,7 +199,7 @@ public class JarOrbit : MonoBehaviour
                     }
                 }
 
-
+/*
                 //ATTEMPT TO STOP AT LEFT SCREEN
                 if (transform.localRotation.y <= m_ScreenBoundaryLeft)
                 {
@@ -207,7 +207,7 @@ public class JarOrbit : MonoBehaviour
                     m_IsRetracting = true;
                     m_IsSwinging = false;
                 }
-
+*/
 
                 //SWING JAR OUTPUT
                 if (m_IsSwinging == true)

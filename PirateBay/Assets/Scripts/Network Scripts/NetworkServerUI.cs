@@ -13,13 +13,14 @@ public class NetworkServerUI : MonoBehaviour {
 	public float accelX;
 	public float accelY;
 	public float accelZ;
+    public float accelSqrd;
 	
 	void OnGUI()
 	{
 		string ipaddress = Network.player.ipAddress;
-		GUI.Box(new Rect(10, Screen.height - 50, 100, 50), ipaddress);
-		GUI.Label(new Rect(20, Screen.height - 35, 100, 20), "Status: " + NetworkServer.active);
-		GUI.Label(new Rect(20, Screen.height - 20, 100, 20), "Connected: " + NetworkServer.connections.Count);
+		GUI.Box(new Rect(50, Screen.height - 70, 100, 50), ipaddress);
+		GUI.Label(new Rect(60, Screen.height - 55, 100, 20), "Status: " + NetworkServer.active);
+		GUI.Label(new Rect(60, Screen.height - 40, 100, 20), "Connected: " + NetworkServer.connections.Count);
 
 		//GUI.Box(new Rect(Screen.width/2 - 100, Screen.height/2 - 25, 250, 50), "Acceleration");
 		//GUI.Label(new Rect(Screen.width/2 -85, Screen.height/2 -5, 250, 20), accelX + ", " + accelY + ", " + accelZ);
@@ -53,8 +54,8 @@ public class NetworkServerUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-		
+
+        accelSqrd = (new Vector3(accelX, accelY, accelZ)).sqrMagnitude;
 
 	}
 }

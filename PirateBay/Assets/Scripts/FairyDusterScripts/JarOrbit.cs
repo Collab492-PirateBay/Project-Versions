@@ -11,6 +11,13 @@ public class JarOrbit : MonoBehaviour
     [SerializeField] public bool m_CanSwing = false;
     public PlayerMovement m_Player;
 
+    public CatchBox m_CatchBox;
+    [SerializeField] private float m_PlayerEstablishedMaxSwingForce;
+
+    [SerializeField] private float m_SwingForceLevel_3;
+    [SerializeField] private float m_SwingForceLevel_2;
+    [SerializeField] private float m_SwingForceLevel_1;
+
     //.....................................................
     //SWINGING JAR
     [SerializeField] private float m_SwingRate = 0.0f;
@@ -30,7 +37,7 @@ public class JarOrbit : MonoBehaviour
     private int m_CatchRatioPicker;
 
     //REPLACE DUST FALL MIN WITH THE POINT MULTIPLIER
-    private int m_DustFallMin;
+    //private int m_DustFallMin;
 
     private float m_SwingCooldownTimer;
     [SerializeField] private float m_SwingCooldownDur = 0.0f;
@@ -96,6 +103,9 @@ public class JarOrbit : MonoBehaviour
         GameObject m_PlayerObject = GameObject.FindGameObjectWithTag("Player");
         m_Player = m_PlayerObject.GetComponent<PlayerMovement>();
 
+        GameObject m_CatchBoxObject = GameObject.FindGameObjectWithTag("CatchBox");
+        m_CatchBox = m_CatchBoxObject.GetComponent<CatchBox>();
+
         m_TotalScoreText = GameObject.Find("TotalScore").GetComponent<Text>();
         m_TotalScoreTextShadow = GameObject.Find("TotalScoreShadow").GetComponent<Text>();
 
@@ -103,6 +113,19 @@ public class JarOrbit : MonoBehaviour
 
         //Sets Network input
         netInput = GameManager.GameManagerInstance.gameObject.GetComponent<NetworkServerUI>();
+
+        if (m_PlayerEstablishedMaxSwingForce > 0)
+        {
+            m_SwingForceLevel_3 = (m_PlayerEstablishedMaxSwingForce - (m_PlayerEstablishedMaxSwingForce / 5));
+            m_SwingForceLevel_2 = (m_PlayerEstablishedMaxSwingForce - ((m_PlayerEstablishedMaxSwingForce / 2.5f)));
+            m_SwingForceLevel_1 = (m_PlayerEstablishedMaxSwingForce - (m_PlayerEstablishedMaxSwingForce / 1.5f));
+        }
+        //else, we need to reestablish the players strength, but for now let's just leave a default max below...
+
+        if (m_PlayerEstablishedMaxSwingForce <= 0)
+        {
+            m_PlayerEstablishedMaxSwingForce = 3;
+        }
     }
 
     //............................................................
@@ -161,7 +184,7 @@ public class JarOrbit : MonoBehaviour
                     if (keyboardControl)
                     {
                         if (Input.GetKey(KeyCode.Space))
-                            if (accelerometerInput.sqrMagnitude > 5)
+                            if (accelerometerInput.sqrMagnitude >= 2)
                             {
                                 m_IsSwinging = true;
                                 m_IsStopped = false;
@@ -180,7 +203,7 @@ public class JarOrbit : MonoBehaviour
                     }
                     else
                     {
-                        if (accelerometerInput.sqrMagnitude > 5)
+                        if (accelerometerInput.sqrMagnitude >= 2)
                         {
                             m_IsSwinging = true;
                             m_IsStopped = false;
@@ -190,6 +213,7 @@ public class JarOrbit : MonoBehaviour
                             m_IsSwinging = false;
                         }
 
+                        //RETRACTING VIA SLOW MOVEMENT ON ACCELEROMETER
                         if (accelerometerInput.sqrMagnitude < 1)
                         {
                             m_IsRetracting = true;
@@ -199,7 +223,7 @@ public class JarOrbit : MonoBehaviour
                     }
                 }
 
-
+/*
                 //ATTEMPT TO STOP AT LEFT SCREEN
                 if (transform.localRotation.y <= m_ScreenBoundaryLeft)
                 {
@@ -207,7 +231,7 @@ public class JarOrbit : MonoBehaviour
                     m_IsRetracting = true;
                     m_IsSwinging = false;
                 }
-
+*/
 
                 //SWING JAR OUTPUT
                 if (m_IsSwinging == true)
@@ -239,10 +263,51 @@ public class JarOrbit : MonoBehaviour
                 }
 
 
-            }
+                if ((m_IsSwinging == true) && (m_CatchBox.m_FairyIsInCatchZone == true))
+                {
+                    if (accelerometerInput.sqrMagnitude >= m_PlayerEstablishedMaxSwingForce)
+                    {
+                        m_CatchBox.m_SwingIsStrongEnough = true;
+                        m_HasCaughtAFairy = true;
+                        m_Player.m_FairiesObtained += 1;
+                        m_CanMoveUp = true;
+                        m_CanMoveDown = true;
+                        m_PointsEarnedFromThisFairy = 0;
 
-            //...............................................................
-            //................................................... * SHAKING *
+                        //DETERMINING FAIRY'S WORTH/VALUE IN DUST PER SHAKE
+                        if (m_CatchBox.m_FairyCaughtID == 4)
+                        {
+                            fairyType = "Red";
+                            transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
+                        }
+                        else if (m_CatchBox.m_FairyCaughtID == 3)
+                        {
+                            fairyType = "Green";
+                            transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
+                        }
+                        else if (m_CatchBox.m_FairyCaughtID == 2)
+                        {
+                            fairyType = "Blue";
+                            transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
+                        }
+                        else if (m_CatchBox.m_FairyCaughtID == 1)
+                        {
+                            fairyType = "Yellow";
+                            transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
+                        }
+
+                        m_CatchBox.m_PlayerIsInShakeMode = true;
+                        m_SwingCooldownTimer = m_SwingCooldownDur;
+                    }
+                    else if ((accelerometerInput.sqrMagnitude < m_PlayerEstablishedMaxSwingForce))
+                    {
+                        m_IsRetracting = true;
+                        m_SwingCooldownTimer = m_SwingCooldownDur;
+                    }
+                }
+            }
+            //.........................................................................
+            //................................................... * SHAKING ANIMATION *
 
             if (m_HasCaughtAFairy == true)
             {
@@ -259,7 +324,7 @@ public class JarOrbit : MonoBehaviour
 
 
                 //...............................................................
-                //NEW SHAKE
+                //...............................................* SHAKING JAR *
 
                 //SHAKE TIMER
                 m_ShakeTimer -= Time.deltaTime;
@@ -309,12 +374,13 @@ public class JarOrbit : MonoBehaviour
                 {
                     if (keyboardControl)
                     {
-                        if (accelerometerInput.sqrMagnitude > 5 && accelerometerInput.y > 0)
+                        if (accelerometerInput.sqrMagnitude > m_PlayerEstablishedMaxSwingForce && accelerometerInput.y < 0)
                         {
                             m_ShakeAnimator.SetBool("IsGoingUp", true);
                             m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
                             m_IsMovingUp = true;
-                            //m_ShakeForceUp = accelometer force y
+
+                            m_ShakeForceUp = accelerometerInput.y;
                             m_PlusPoints = m_PointsMultiplier * m_ShakeForceUp;
                             m_PointsEarnedFromThisFairy += m_PlusPoints;
                             m_TotalScore += m_PlusPoints;
@@ -324,7 +390,6 @@ public class JarOrbit : MonoBehaviour
                                 m_ShakingHasStarted = true;
                                 m_ShakeTimer = m_ShakeDur;
                             }
-                            //might need some code to recognize a stop for the accelometer because of the first if statement about moving down?
                         }
                         else if (Input.GetKeyUp(KeyCode.UpArrow))
                         {
@@ -336,13 +401,14 @@ public class JarOrbit : MonoBehaviour
                     else
                     {
                         //recognize accelerometer input & direction 
-                        if (accelerometerInput.sqrMagnitude > 5 && accelerometerInput.y > 0)
+                        if (accelerometerInput.sqrMagnitude > m_PlayerEstablishedMaxSwingForce && accelerometerInput.y > 0)
                         {
                             m_ShakeAnimator.SetBool("IsGoingUp", true);
                             m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
                             m_IsMovingUp = true;
-                            //m_ShakeForceUp = accelometer force y
-                            m_PlusPoints = m_PointsMultiplier * m_ShakeForceUp;
+
+                            m_ShakeForceUp = accelerometerInput.y;
+                            m_PlusPoints = m_PointsMultiplier * accelerometerInput.y;
                             m_PointsEarnedFromThisFairy += m_PlusPoints;
                             m_TotalScore += m_PlusPoints;
 
@@ -351,7 +417,6 @@ public class JarOrbit : MonoBehaviour
                                 m_ShakingHasStarted = true;
                                 m_ShakeTimer = m_ShakeDur;
                             }
-                            //might need some code to recognize a stop for the accelometer because of the first if statement about moving down?
                         }
                         
                         else if (accelerometerInput.sqrMagnitude < 1)
@@ -368,12 +433,13 @@ public class JarOrbit : MonoBehaviour
                 {
                     if (keyboardControl)
                     {
-                        if (Input.GetKeyDown(KeyCode.DownArrow)) //if y axis <= m_DownShakeForceRequirement
+                        if (Input.GetKeyDown(KeyCode.DownArrow)) 
                         {
                             m_ShakeAnimator.SetBool("IsGoingDown", true);
                             m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
                             m_IsMovingDown = true;
-                            //m_ShakeForceDown = accelometer force -y
+
+                            m_ShakeForceDown = accelerometerInput.y * -1;
                             m_PlusPoints = m_PointsMultiplier * m_ShakeForceDown;
                             m_PointsEarnedFromThisFairy += m_PlusPoints;
                             m_TotalScore += m_PlusPoints;
@@ -394,12 +460,13 @@ public class JarOrbit : MonoBehaviour
                     else
                     {
                         //recognize accelerometer input & direction 
-                        if (accelerometerInput.sqrMagnitude > 5 && accelerometerInput.y < 0)
+                        if (accelerometerInput.sqrMagnitude > m_PlayerEstablishedMaxSwingForce && accelerometerInput.y < 0)
                         {
                             m_ShakeAnimator.SetBool("IsGoingDown", true);
                             m_ShakeAnimator.SetFloat("ShakeSpeed", m_ShakeSpeed);
                             m_IsMovingDown = true;
-                            //m_ShakeForceDown = accelometer force -y
+
+                            m_ShakeForceDown = accelerometerInput.y * -1;
                             m_PlusPoints = m_PointsMultiplier * m_ShakeForceDown;
                             m_PointsEarnedFromThisFairy += m_PlusPoints;
                             m_TotalScore += m_PlusPoints;
@@ -433,86 +500,6 @@ public class JarOrbit : MonoBehaviour
                 }
 
             }
-        }
-    }
-
-    //...............................................................
-    //.................................................. * TRIGGERS *
-
-    protected void OnTriggerEnter(Collider aTrigger)
-    {
-        //CATCH RATIO
-        //when fairy has been hit by the jar while it's swinging, there's a random chance of catching it...
-
-        GameObject aTriggerObject;
-        aTriggerObject = aTrigger.gameObject;
-
-        FairyMovement aFairy;
-        aFairy = aTriggerObject.GetComponent<FairyMovement>();
-
-        if (aFairy != null)
-        {
-            if (m_IsSwinging == true)
-            {
-                //start the randomizer, the minimun is determined by the fairy type and it's bonus (granted by failed attempts)
-                m_CatchRatioPicker = Random.Range(aFairy.m_CatchRateMin, m_CatchRatioMax);
-
-                if (m_CatchRatioPicker <= 4)
-                {
-                    aFairy.m_CatchRateAttemptBonus += 1;
-                    m_IsRetracting = true;
-                    m_SwingCooldownTimer = m_SwingCooldownDur;
-                    m_NotifierTimer = m_NotifierDur;
-                    m_NotifierText.text = "MISS!";
-                    aFairy.m_IsScared = true;
-                }
-                else if (m_CatchRatioPicker == 5)
-                {
-                    m_HasCaughtAFairy = true;
-                    m_Player.m_FairiesObtained += 1;
-                    m_CanMoveUp = true;
-                    m_CanMoveDown = true;
-                    m_PointsEarnedFromThisFairy = 0;
-
-                    //DETERMINING FAIRY'S WORTH/VALUE IN DUST PER SHAKE
-                    if (aFairy.m_FairyIsRed)
-                    {
-                        fairyType = "Red";
-                        m_DustFallMin = 250;
-                        m_NotifierTimer = m_NotifierDur;
-                        m_NotifierText.text = "SUPER RARE!";
-                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
-                    }
-                    else if (aFairy.m_FairyIsGreen)
-                    {
-                        fairyType = "Green";
-                        m_DustFallMin = 200;
-                        m_NotifierTimer = m_NotifierDur;
-                        m_NotifierText.text = "RARE!";
-                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
-                    }
-                    else if (aFairy.m_FairyIsBlue)
-                    {
-                        fairyType = "Blue";
-                        m_DustFallMin = 150;
-                        m_NotifierTimer = m_NotifierDur;
-                        m_NotifierText.text = "SPECIAL!";
-                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
-                    }
-                    else if (aFairy.m_FairyIsYellow)
-                    {
-                        fairyType = "Yellow";
-                        m_DustFallMin = 100;
-                        m_NotifierTimer = m_NotifierDur;
-                        m_NotifierText.text = "OKAY!";
-                        transform.localRotation = Quaternion.Euler(0.0f, -25, 0.0f);
-                    }
-
-                    aFairy.gameObject.SetActive(false);
-                    m_SwingCooldownTimer = m_SwingCooldownDur;
-                } 
-            }
-
         }
     }
 }

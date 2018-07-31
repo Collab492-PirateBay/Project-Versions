@@ -57,31 +57,33 @@ public class FairyMovement : MonoBehaviour
     //..............................................................
     //................................. FAIRY TYPES & COLOR SETTINGS
 
-    //FAIRY TYPE
-    public int m_CatchRateMin;
-    //should see the SF change below each time the timer is up and resets
-    [SerializeField] private int m_CatchRateBase;
-    //should see below change each time you miss swinging at the fairy, should get +1 and stop at 3/stay 3
-    [SerializeField] public int m_CatchRateAttemptBonus = 0;
-    //the bonus allows the player to have a better chance of catching the... 
-    //fairy on future attempts by adding it to their base rate and producing...
-    //the catchrate min that will be sent to the jar script.
-
     private int m_FairyTypePicker;
     public bool m_FairyIsRed;
     public bool m_FairyIsGreen;
     public bool m_FairyIsBlue;
     public bool m_FairyIsYellow;
 
-    private float m_FairyTypeChangeTimer;
-    [SerializeField] private float m_FairyTypeChangeDurationMin = 0.0f;
-    [SerializeField] private float m_FairyTypeChangeDurationMax = 0.0f;
-    //can later change the duration to be affected by the color/rarity of the fairy maybe
-
     //MATERIAL/COLOR CHANGE
     private Renderer m_FairyRenderer = null;
     public Material[] m_FairyColorMaterial = null;
 
+
+    //FAIRY TYPE
+    //public int m_CatchRateMin;
+    //should see the SF change below each time the timer is up and resets
+    //[SerializeField] private int m_CatchRateBase;
+    //should see below change each time you miss swinging at the fairy, should get +1 and stop at 3/stay 3
+    //[SerializeField] public int m_CatchRateAttemptBonus = 0;
+    //the bonus allows the player to have a better chance of catching the... 
+    //fairy on future attempts by adding it to their base rate and producing...
+    //the catchrate min that will be sent to the jar script.
+
+
+
+    //private float m_FairyTypeChangeTimer;
+    //[SerializeField] private float m_FairyTypeChangeDurationMin = 0.0f;
+    //[SerializeField] private float m_FairyTypeChangeDurationMax = 0.0f;
+    //can later change the duration to be affected by the color/rarity of the fairy maybe
 
 
     //make the fairy type determined more on rarity in the random picker
@@ -109,13 +111,13 @@ public class FairyMovement : MonoBehaviour
         //FAIRY TYPE & CATCH RATE SETTIINGS
 
         //FAIRY TYPE TIMER
-        m_FairyTypeChangeTimer -= Time.deltaTime;
-        if (m_FairyTypeChangeTimer <= 0)
-        {
-            m_FairyTypeChangeTimer = 0;
-            m_FairyTypePicker = Random.Range(1, 5);
-            m_FairyTypeChangeTimer = Random.Range(m_FairyTypeChangeDurationMin, m_FairyTypeChangeDurationMax);
-        }
+        //m_FairyTypeChangeTimer -= Time.deltaTime;
+        //if (m_FairyTypeChangeTimer <= 0)
+        //{
+            //m_FairyTypeChangeTimer = 0;
+            //m_FairyTypePicker = Random.Range(1, 5);
+            //m_FairyTypeChangeTimer = Random.Range(m_FairyTypeChangeDurationMin, m_FairyTypeChangeDurationMax);
+        //}
 
         //SETTING FAIRY'S TYPE
         if (m_FairyTypePicker == 1)
@@ -150,34 +152,34 @@ public class FairyMovement : MonoBehaviour
         //FAIRY TYPE DETERMINES...
         if (m_FairyIsRed == true)
         {
-            m_CatchRateBase = 1;
+            //m_CatchRateBase = 1;
             m_FairyRenderer.sharedMaterial = m_FairyColorMaterial[0];
         }
         if (m_FairyIsGreen == true)
         {
-            m_CatchRateBase = 2;
+            //m_CatchRateBase = 2;
             m_FairyRenderer.sharedMaterial = m_FairyColorMaterial[1];
         }
         if (m_FairyIsBlue == true)
         {
-            m_CatchRateBase = 3;
+            //m_CatchRateBase = 3;
             m_FairyRenderer.sharedMaterial = m_FairyColorMaterial[2];
         }
         if (m_FairyIsYellow == true)
         {
-            m_CatchRateBase = 4;
+            //m_CatchRateBase = 4;
             m_FairyRenderer.sharedMaterial = m_FairyColorMaterial[3];
         }
 
         //CURRENT FAIRY'S TYPE & CATCH RATIO
         //the bonus is triggered in the jar's script, getting +1 each time it fails
-        m_CatchRateMin = m_CatchRateAttemptBonus + m_CatchRateBase;
+        //m_CatchRateMin = m_CatchRateAttemptBonus + m_CatchRateBase;
 
         //CATCH RATE CAP
-        if (m_CatchRateMin >= 5)
-        {
-            m_CatchRateMin = 5;
-        }
+        //if (m_CatchRateMin >= 5)
+        //{
+            //m_CatchRateMin = 5;
+        //}
 
             
         //..............................................................
@@ -228,7 +230,7 @@ public class FairyMovement : MonoBehaviour
             m_MovingInLastDirection = false;
             m_CurrentDir = Random.Range(1, 5);
             m_CurrentDirY = Random.Range(1, 3);
-            m_MoveTimer = 0;
+            m_MoveTimer = m_MoveDur;
         }
 
 
@@ -280,7 +282,7 @@ public class FairyMovement : MonoBehaviour
         //MOVE RESTRICTIONS / BOUNDARIES
         //make sure that the fairies don't leave the arena, incase we end up...
         //using them in swarms and they individually wouldn't have box colliders...
-
+/*
         //TOP LIMIT
         if (transform.position.y >= m_TopLimit)
         {
@@ -323,7 +325,7 @@ public class FairyMovement : MonoBehaviour
             m_CurrentDir = 1;
             m_MoveTimer = 0;
         }
-
+*/
         //RIGIDBODY FOLLOWUP W/VELOCITY
         m_RigidBody.velocity = a_Velocity;
 
@@ -358,4 +360,5 @@ public class FairyMovement : MonoBehaviour
             }
         }
     }
+
 }

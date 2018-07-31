@@ -11,32 +11,38 @@ public class FirstPersonCam : MonoBehaviour
 
     private bool isRotating;
 
+    private Vector3 newRotation;
+
     
     void Update()
     {
-
-        if (cameraSwitch.atStartPosition == true)
-        {
-
+       // mouseOrigin = Input.mousePosition;
+       if (cameraSwitch.atStartPosition == true)
+      {
+            
             if (Input.GetMouseButton(0))
             {
+                
                 if (!isRotating)
                 {
                     mouseOrigin = Input.mousePosition;
                     isRotating = true;
                 }
-
+                
                 Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - mouseOrigin);
 
-                transform.RotateAround(transform.position, transform.right, -pos.y * turnSpeed);
-                transform.RotateAround(transform.position, Vector3.up, pos.x * turnSpeed);
-            }
-
+                //transform.RotateAround(transform.position, transform.right, -pos.y * turnSpeed);
+                transform.RotateAround(transform.position, Vector3.up, -pos.x * turnSpeed);
+          }
+        
             if(Input.GetMouseButtonUp(0))
             {
+                
                 isRotating = false;
+               // newRotation = transform.eulerAngles.y;
             }
-
+            
+   
         }
 
     }

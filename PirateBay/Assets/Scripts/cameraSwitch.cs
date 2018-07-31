@@ -10,18 +10,18 @@ public class cameraSwitch : MonoBehaviour
     public GameObject mainCamera;
     //Main Menu Buttons
     public GameObject AdventureButton;
-    public GameObject options_Button;
-    public GameObject exitGame_Button;
+   // public GameObject options_Button;
+    //public GameObject exitGame_Button;
     public GameObject TitleObject;
     //Lobby Buttons
     public GameObject rightButton;
     public GameObject midButton;
     public GameObject leftButton;
     public GameObject backButton;
+    public GameObject canonGame_Button;
+    public GameObject fairyDusterGame_Button;
 
-
-
-    public float camSpeed = 3.0f;
+    public float camSpeed = 0.01f;
     
     private Vector3 lookatPoint;
     private Vector3 originalPoint;
@@ -29,6 +29,7 @@ public class cameraSwitch : MonoBehaviour
     private Vector3 rightPoint;
     private Vector3 leftPoint;
     private Vector3 currentPoint;
+    private Vector3 GameslookAtPoint;
 
     public static bool mainMenuFinished;
     public static bool atStartPosition;
@@ -43,25 +44,20 @@ public class cameraSwitch : MonoBehaviour
 
     void Start()
     {
-        //Cursor.lockState = CursorLockMode.Locked;
-        //Cursor.lockState = CursorLockMode.None;
-
         canMoveBack = false;
         midSelected = false;
         leftSelected = false;
         rightSelected = false;
         mainMenuFinished = false;
         MenuisActive = true;
-
-
-              
-
-
+        CamCanLookAt = false;
     }
 
     void Update()
     {
-        lookatPoint = GameObject.Find("LookAt_Point").transform.position;
+        lookatPoint = GameObject.Find("SM_Prop_Fountain_01").transform.position;
+        GameslookAtPoint = GameObject.Find("SM_Prop_Crate_03").transform.position;
+
         originalPoint = GameObject.Find("CamOriginalPOS").transform.position;
         rightPoint = GameObject.Find("CityCam").transform.position;
         midPoint = GameObject.Find("CathedralCam").transform.position;
@@ -98,6 +94,11 @@ public class cameraSwitch : MonoBehaviour
             this.transform.LookAt(lookatPoint);
             this.transform.Translate(Vector3.right * camSpeed * Time.deltaTime);
         }
+        if (CamCanLookAt == true)
+        {
+            Camera.main.transform.rotation = Quaternion.Euler(17.0f, 86.0f, 0.0f);
+            StartCoroutine(camLookAtStart());
+        }
 
     }
 
@@ -106,9 +107,10 @@ public class cameraSwitch : MonoBehaviour
     {
         backButton.SetActive(false);
         transform.position = Vector3.Lerp(this.transform.position, originalPoint, 0.02f);
-        //Set camera rotation
-        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 88.0f, 0.0f);
+        
+
         yield return new WaitForSeconds(2.8f);
+        
         atStartPosition = true;
         yield return null;
     }
@@ -116,8 +118,11 @@ public class cameraSwitch : MonoBehaviour
 
     IEnumerator MovetoLeftCam()
     {
+        fairyDusterGame_Button.SetActive(true);
+        canonGame_Button.SetActive(true);
         backButton.SetActive(true);
-        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 26.628f, 0.0f);
+        //look at the Games area
+        this.transform.LookAt(GameslookAtPoint);
         backButton.SetActive(true);
         transform.position = Vector3.Lerp(this.transform.position, leftPoint, 0.02f);
         yield return null;
@@ -127,8 +132,7 @@ public class cameraSwitch : MonoBehaviour
     {
         backButton.SetActive(true);
         transform.position = Vector3.Lerp(this.transform.position, midPoint, 0.02f);
-        //Set camera rotation
-        Camera.main.transform.rotation = Quaternion.Euler(0.0f, 96.188f, 0.0f);
+
         yield return null;
     }
 
@@ -143,6 +147,9 @@ public class cameraSwitch : MonoBehaviour
     IEnumerator moveCamBack()
     {
         backButton.SetActive(false);
+        fairyDusterGame_Button.SetActive(false);
+        canonGame_Button.SetActive(false);
+        CamCanLookAt = true;
         transform.position = Vector3.Lerp(this.transform.position, originalPoint, 0.02f);
 
         yield return new WaitForSeconds(1.5f);
@@ -150,6 +157,17 @@ public class cameraSwitch : MonoBehaviour
         yield return null;
     }
 
+    IEnumerator camLookAtStart()
+    {
+        //Camera.main.transform.rotation = Quaternion.Euler(17.0f, 86.0f, 0.0f);
+
+        yield return new WaitForSeconds(1.5f);
+        CamCanLookAt = false;
+        yield return null;
+    }
+
+
+    /*
     IEnumerator OptionsNA()
     {
         options_Button.GetComponentsInChildren<Text>()[0].text = "Not Available Yet";
@@ -157,25 +175,26 @@ public class cameraSwitch : MonoBehaviour
         options_Button.GetComponentsInChildren<Text>()[0].text = "Options";
         yield return null;
     }
+    */
 
-    
     /************************************
     //Main Menu Stuff
     ************************************/
     public void OnAdventureClicked()
     {
+        CamCanLookAt = true;
         mainMenuFinished = true;
         MenuisActive = false;
         AdventureButton.SetActive(false);
-        options_Button.SetActive(false);
-        exitGame_Button.SetActive(false);
+       // options_Button.SetActive(false);
+        //exitGame_Button.SetActive(false);
         TitleObject.SetActive(false);
 
     }
 
     public void OnOptionsClicked()
     {
-        StartCoroutine(OptionsNA());
+     //   StartCoroutine(OptionsNA());
     }
 
     public void OnExitClicked()

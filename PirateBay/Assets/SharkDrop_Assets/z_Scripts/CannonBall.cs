@@ -24,9 +24,6 @@ public class CannonBall : MonoBehaviour
     private float m_BallLifeTimer;
     [SerializeField] private float m_BallLifeDuration = 0.0f;
 
-    //EXPLODES ON CONTACT
-    //[SerializeField] private Explosion m_BallExplosionPrefab;
-    //[SerializeField] private int m_CannonballDamage = 0;
 
     //............................................................
     //.................................................. * START *
@@ -50,12 +47,12 @@ public class CannonBall : MonoBehaviour
         {
             m_BeforeArchPeakTimer = 0;
             m_Speed = m_DecliningSpeed;
-            //m_CannonBallDir = (Vector3.down + Vector3.forward);
+
+            m_RigidBody.useGravity = true;
         }
         else if (m_BeforeArchPeakTimer > 0)
         {
             m_Speed = m_LaunchSpeed;
-            //m_CannonBallDir = Vector3.forward;
         }
 
 
@@ -70,29 +67,4 @@ public class CannonBall : MonoBehaviour
 
         m_RigidBody.velocity = a_Velocity;
     }
-
-    ////............................................................
-    ////............................................... * TRIGGERS *
-
-    //protected void OnTriggerEnter(Collider aCollider)
-    //{
-    //    GameObject aCollisionObject;
-    //    aCollisionObject = aCollider.gameObject;
-
-    //    //Health aVulnerableBody;
-    //    //aVulnerableBody = aCollisionObject.GetComponent<Health>();
-
-    //    //if (aVulnerableBody != null)
-    //    //{
-    //    //    Explosion aExplosionObject;
-    //    //    aExplosionObject = Instantiate(m_BallExplosionPrefab) as Explosion;
-    //    //    aExplosionObject.transform.position = transform.position;
-
-    //    //    //take some damage from contact with the cannon, along with damage from the explosion
-    //    //    aVulnerableBody.OnHurt(m_CannonballDamage);
-    //    //    Destroy(gameObject);
-    //    //}
-
-    //}
-
 }

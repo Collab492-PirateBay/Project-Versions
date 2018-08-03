@@ -12,33 +12,37 @@ public class FD_Player : MonoBehaviour {
 	public Animation mopAnim;
 	private bool collectingStarted;
 
+    private int targetNumb = 0;
+    public float waitTime;
+
 	public bool Test;
 
 	// Use this for initialization
 	void Start () 
 	{
 		UI_manager = GameObject.FindGameObjectWithTag("uiManager").GetComponent<UIManager>();
-		fairyTargets = GameObject.FindGameObjectsWithTag("Target");
+		//fairyTargets = GameObject.FindGameObjectsWithTag("Target");
 		distances = new float[fairyTargets.Length];
+        targetNumb = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-         distances[0] = Vector3.Distance(gameObject.transform.position, fairyTargets[0].transform.position);
-		 //distances[1] = Vector3.Distance(gameObject.transform.position, fairyTargets[1].transform.position);
-		 //distances[2] = Vector3.Distance(gameObject.transform.position, fairyTargets[2].transform.position);
+         distances[targetNumb] = Vector3.Distance(gameObject.transform.position, fairyTargets[targetNumb].transform.position);
 
 		 //if(distances[0] < distanceActive)
 		 if(Test)
 		 {
-		 	float m_timeElapsed = Time.deltaTime;
+            StartCoroutine("fairyCount");
 		 	mopAnim.Play();
 			collectingStarted = true;
+            /*
 			if(m_timeElapsed > 5)
 			{
 				CollectFairy();
 			}
+            */
 		 }
 		 else
 		 {
@@ -48,13 +52,27 @@ public class FD_Player : MonoBehaviour {
 		 		mopAnim.Stop();
 		 		
 				collectingStarted = false;
+                StopCoroutine("fairyCount");
 			}
 
-		 }	
+		 }
+        Debug.Log(targetNumb);
 	}
 
 	void CollectFairy()
 	{
 		UI_manager.m_FairiesObtained += 1;
+        fairyTargets[targetNumb].GetComponent<FairyPoof>().StartCoroutine("explodeBody");
+        Debug.Log("ran once");
+        Test = false;
+        if(targetNumb < fairyTargets.Length)
+            targetNumb += 1;
 	}
+
+    private IEnumerator fairyCount()
+    {
+        yield return new WaitForSeconds(waitTime);
+        CollectFairy();
+        UI_manager.StartCoroutine("goldObtained");
+    }
 }

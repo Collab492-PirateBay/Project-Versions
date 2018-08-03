@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Collector : MonoBehaviour 
 {
@@ -13,11 +14,16 @@ public class Collector : MonoBehaviour
     [SerializeField] private int m_CollectionsCounter = 0;
     [SerializeField] private int m_GameOverRequirement = 4;
 
+    public Text m_ScoreText;
+    public Text m_ScoreTextShadow;
+
+    public bool m_GameIsOver = false;
+
     //........................................................
     // RELATIVE SCRIPTS
     public Spawner m_Spawner;
 
-
+    public CannonMovement m_CannonMovement;
 
     //............................................................
     //.................................................. * START *
@@ -25,6 +31,9 @@ public class Collector : MonoBehaviour
     {
         GameObject spawnerObject = GameObject.FindGameObjectWithTag("Spawner");
         m_Spawner = spawnerObject.GetComponent<Spawner>();
+
+        GameObject cannonObject = GameObject.FindGameObjectWithTag("Cannon");
+        m_CannonMovement = cannonObject.GetComponent<CannonMovement>();
     }
 
     //............................................................
@@ -33,8 +42,11 @@ public class Collector : MonoBehaviour
     {
         if (m_CollectionsCounter >= m_GameOverRequirement)
         {
-            // END GAME!!!!
+            m_GameIsOver = true;
         }
+
+        m_ScoreText.text = m_CollectionsCounter + " / " + m_GameOverRequirement;
+        m_ScoreTextShadow.text = m_CollectionsCounter + " / " + m_GameOverRequirement;
     }
 
     //............................................................
@@ -58,7 +70,11 @@ public class Collector : MonoBehaviour
             if (m_Spawner.m_IsReSpawning == false)
             {
                 m_CollectionsCounter += 1;
+
                 Destroy(balloonObject.gameObject);
+
+                m_CannonMovement.m_PlayerControlsAreActive = true;
+
                 m_Spawner.m_IsReSpawning = true;
             }
         }

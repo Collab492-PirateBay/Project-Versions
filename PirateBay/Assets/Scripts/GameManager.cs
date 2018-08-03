@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour {
         m_currentState = GameState.Load;
     }
 
-   
+   public int goldEarnedLifetime;
 
     public AudioClip Menu_music,
                       Game_music;

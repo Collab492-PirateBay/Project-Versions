@@ -20,14 +20,15 @@ public class UIManager : MonoBehaviour
 
 
     //START & END SCREEN UI
-    [HideInInspector]
-    public bool hasGameStarted = false;
 
-    private GameObject[] endScreenUIObjects;
+    public bool hasGameStarted = false;
+    [SerializeField]
+    private GameObject endScreenUIObjects;
 
 
     //COUNTDOWN FOR GAME START
     private float m_CountdownTimer;
+    [SerializeField]
     private float m_CountdownDur = 3.0f;
     public Text m_CountdownText;
     public bool m_GameHasStarted;
@@ -37,9 +38,14 @@ public class UIManager : MonoBehaviour
 
     private GameManager Game_manager;
 
-    //public JarOrbit jarsLoot;
-    //private float goldEarned;
-    //public Text goldEarnedText;
+    [HideInInspector]
+    public int goldEarned = 0;
+    public Text goldEarnedText,
+                goldEarnedTextShadow,
+                totalGoldText,
+                totalGoldTextShadow,
+                totalGoldAdded;
+    public GameObject notifyText;
 
 
 	void Start () 
@@ -52,15 +58,19 @@ public class UIManager : MonoBehaviour
         gameplayUIObjects = GameObject.FindGameObjectsWithTag("HideOnPause");
 
 
-        //VICTORY UI 
-        endScreenUIObjects = GameObject.FindGameObjectsWithTag("EndScreenElements");
-
-
+        m_CountdownTimer = m_CountdownDur;
         m_GameHasStarted = false;
         m_GameHasEnded = false;
 
+        goldEarnedText.text = "" + goldEarned;
+        goldEarnedTextShadow.text = "" + goldEarned;
+
+       
         Game_manager = GameManager.GameManagerInstance;
-	}
+        totalGoldText.text = "" + Game_manager.goldEarnedLifetime;
+        totalGoldTextShadow.text = "" + Game_manager.goldEarnedLifetime;
+
+    }
 	
 
 	void Update () 
@@ -70,9 +80,9 @@ public class UIManager : MonoBehaviour
             m_GameHasEnded = true;
 
             m_CountdownTimer = m_CountdownDur;
-            m_CountdownText.text = "END!";
 
-            ShowEndScreen();
+            totalGoldAdded.text = "+ " + goldEarned;
+            //ShowEndScreen();
             StartCoroutine(EndTimer());
         }
 
@@ -151,22 +161,28 @@ public class UIManager : MonoBehaviour
     }
 
 
-    //...............................................................
-    //............................... * METHOD : SHOW ON END SCREEN *
-    public void ShowEndScreen()
-    {
-        foreach (GameObject i in endScreenUIObjects)
-        {
-            i.SetActive(true);
-        }
-    }
-
     IEnumerator EndTimer()
     {
-        yield return new WaitForSeconds(5.0f);
-        Game_manager.setCurrentScene("AB_Lobby");
+        yield return new WaitForSeconds(2.5f);
+        m_CountdownText.text = "END!";
+        yield return new WaitForSeconds(1.5f);
+        //Game_manager.setCurrentScene("AB_Lobby");
+        endScreenUIObjects.SetActive(true);
+        yield return new WaitForSeconds(1.5f);
+        Game_manager.goldEarnedLifetime += goldEarned;
+        totalGoldText.text = "" + Game_manager.goldEarnedLifetime;
+        totalGoldTextShadow.text = "" + Game_manager.goldEarnedLifetime;
     }
 
+    public IEnumerator goldObtained()
+    {
+        notifyText.SetActive(true);
+        yield return new WaitForSeconds(2.5f);
+        notifyText.SetActive(false);
+        goldEarned += 500;
+        goldEarnedText.text = "" + goldEarned;
+        goldEarnedTextShadow.text = "" + goldEarned;
+    }
 
 
 }

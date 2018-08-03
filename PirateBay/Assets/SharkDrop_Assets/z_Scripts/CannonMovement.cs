@@ -10,6 +10,9 @@ public class CannonMovement : MonoBehaviour
     //........................................................
     // COMMON VARIABLES
 
+    // LOCK CONTROLS (GAMEPLAY)
+    [SerializeField] public bool m_PlayerControlsAreActive = false;
+
     [SerializeField] private float m_TurningLimit = 0.15f;
 
     [SerializeField] private float m_TurningCapabilitySpeed = 0.0f;
@@ -20,6 +23,9 @@ public class CannonMovement : MonoBehaviour
 
     public Transform m_CannonBallSpawnPoint;
     public CannonBall m_CannonBallPrefab;
+
+    public Transform m_CannonSmokeSpawnPoint;
+    public GameObject m_CannonSmokePrefab;
 
     private float m_FiringCooldown;
     [SerializeField] private float m_FiringDuration = 0.0f;
@@ -39,103 +45,123 @@ public class CannonMovement : MonoBehaviour
 
     [SerializeField] private float accelerometerSafetyCushion = 0.0f;
 
+    //........................................................
+    // RELATIVE SCRIPTS
+
+    public SceneManagement_SD m_SceneManager;
+
     //............................................................
     //.................................................. * START *
     void Start()
     {
-        //transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        GameObject sceneManagerObject = GameObject.FindGameObjectWithTag("SceneManager");
+        m_SceneManager = sceneManagerObject.GetComponent<SceneManagement_SD>();
+        //Sets Network input
+        netInput = GameManager.GameManagerInstance.gameObject.GetComponent<NetworkServerUI>();
     }
 
     //............................................................
     //................................................. * UPDATE *
     void Update()
     {
-        //....................................................
-        // ACCELEROMETER INPUTS
-
-        if (!keyboardControl)
+        // CONTROLLING PLAYER INPUT
+        if (m_SceneManager.m_GameplayActive == true)
         {
-            //Gets Accelerometer input from networked client
-            accelerometerInput = new Vector3(netInput.accelX, netInput.accelY, netInput.accelZ);
-
-            m_CannonRotationValue = accelerometerInput.sqrMagnitude;
+            m_PlayerControlsAreActive = true;
+        }
+        else
+        {
+            m_PlayerControlsAreActive = false;
         }
 
-        //....................................................
-        // COMMON VARIABLES
 
-        float aTurnAmount;
-        aTurnAmount = m_TurningSpeed * Time.deltaTime;
-
-        Vector3 aTurnVector;
-        aTurnVector = aTurnAmount * Vector3.up;
-
-        m_FiringCooldown -= Time.deltaTime;
-
-        if (m_FiringCooldown <= 0)
+        if (m_PlayerControlsAreActive == true)
         {
-            m_FiringCooldown = 0;
-        }
+            //....................................................
+            // ACCELEROMETER INPUTS
 
-        //....................................................
-        // TURNING LEFT
-
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            if (transform.localRotation.y >= (m_TurningLimit * -1))
+            if (!keyboardControl)
             {
-                if (!keyboardControl)
+                //Gets Accelerometer input from networked client
+                accelerometerInput = new Vector3(netInput.accelX, netInput.accelY, netInput.accelZ);
+
+                m_CannonRotationValue = accelerometerInput.sqrMagnitude;
+            }
+
+            //....................................................
+            // COMMON VARIABLES
+
+            float aTurnAmount;
+            aTurnAmount = m_TurningSpeed * Time.deltaTime;
+
+            Vector3 aTurnVector;
+            aTurnVector = aTurnAmount * Vector3.up;
+
+            m_FiringCooldown -= Time.deltaTime;
+
+            if (m_FiringCooldown <= 0)
+            {
+                m_FiringCooldown = 0;
+            }
+
+            //....................................................
+            // TURNING LEFT
+
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                if (transform.localRotation.y >= (m_TurningLimit * -1))
                 {
-                    if (m_CannonRotationValue < accelerometerSafetyCushion)
+                    if (!keyboardControl)
                     {
-                        m_TurningSpeed = 0;
+                        if (m_CannonRotationValue < accelerometerSafetyCushion)
+                        {
+                            m_TurningSpeed = 0;
+                        }
+                        else if (m_CannonRotationValue <= accelerometerSafetyCushion)
+                        {
+                            m_TurningSpeed = m_TurningCapabilitySpeed;
+                            transform.Rotate(-aTurnVector);
+                        }
                     }
-                    else if (m_CannonRotationValue <= accelerometerSafetyCushion)
+                    else if (keyboardControl)
                     {
                         m_TurningSpeed = m_TurningCapabilitySpeed;
                         transform.Rotate(-aTurnVector);
                     }
                 }
-                else if (keyboardControl)
-                {
-                    m_TurningSpeed = m_TurningCapabilitySpeed;
-                    transform.Rotate(-aTurnVector);
-                }
             }
-        }
 
-        //..................................................
-        // TURNING RIGHT
+            //..................................................
+            // TURNING RIGHT
 
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            if (transform.localRotation.y <= m_TurningLimit)
+            if (Input.GetKey(KeyCode.RightArrow))
             {
-                if (!keyboardControl)
+                if (transform.localRotation.y <= m_TurningLimit)
                 {
-                    if (m_CannonRotationValue < accelerometerSafetyCushion)
+                    if (!keyboardControl)
                     {
-                        m_TurningSpeed = 0;
+                        if (m_CannonRotationValue < accelerometerSafetyCushion)
+                        {
+                            m_TurningSpeed = 0;
+                        }
+                        else if (m_CannonRotationValue >= accelerometerSafetyCushion)
+                        {
+                            m_TurningSpeed = m_TurningCapabilitySpeed;
+                            transform.Rotate(aTurnVector);
+                        }
                     }
-                    else if (m_CannonRotationValue >= accelerometerSafetyCushion)
+                    else if (keyboardControl)
                     {
                         m_TurningSpeed = m_TurningCapabilitySpeed;
                         transform.Rotate(aTurnVector);
                     }
                 }
-                else if (keyboardControl)
-                {
-                    m_TurningSpeed = m_TurningCapabilitySpeed;
-                    transform.Rotate(aTurnVector);
-                }
             }
         }
 
-        // FIRING
-        if (m_IsTargetAligned == true)
+        if (m_SceneManager.m_OrderInScene == 9)
         {
-            FireCannon();
-            m_IsTargetAligned = false;
+            m_PlayerControlsAreActive = false;
         }
     }
 
@@ -146,6 +172,12 @@ public class CannonMovement : MonoBehaviour
     {
         if (m_FiringCooldown <= 0)
         {
+            GameObject cannonSmokeObject;
+            cannonSmokeObject = Instantiate(m_CannonSmokePrefab);
+
+            cannonSmokeObject.transform.position = m_CannonBallSpawnPoint.position + 1.0f * Vector3.zero;
+
+
             CannonBall cannonBallObject;
             cannonBallObject = Instantiate(m_CannonBallPrefab) as CannonBall;
 

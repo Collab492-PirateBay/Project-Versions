@@ -1,207 +1,151 @@
-﻿/* UI MANAGEMENT */
-/* BLAKE CURIA */
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour 
 {
     //in Inpsector, drop-down the elements and match the button with the appropriate GameObject w/the tag "ShowOnPause"
-    GameObject[] pausedUIObjects;
+    private GameObject[] pausedUIObjects;
 
-    GameObject[] gameplayUIObjects;
+    private GameObject[] gameplayUIObjects;
+
+    //GAME REQUIREMENTS
+    [SerializeField] 
+    private int m_FairiesNeededToWin = 3;
+    public int m_FairiesObtained = 0;
+    public Text m_GameReqText;
+
+    public bool m_GameHasEnded;
 
 
     //START & END SCREEN UI
+    [HideInInspector]
     public bool hasGameStarted = false;
 
-    GameObject[] startScreenUIObjects;
-    GameObject[] endScreenUIObjects;
+    private GameObject[] endScreenUIObjects;
 
-    //public PlayerMovement playerFinished;
+
+    //COUNTDOWN FOR GAME START
+    private float m_CountdownTimer;
+    private float m_CountdownDur = 3.0f;
+    public Text m_CountdownText;
+    public bool m_GameHasStarted;
+
+
+    
+
+    private GameManager Game_manager;
 
     //public JarOrbit jarsLoot;
     //private float goldEarned;
     //public Text goldEarnedText;
 
 
-    //...............................................................
-    //..................................................... * START *
 	void Start () 
     {
-        Time.timeScale = 1;
-
-        //..................................
-        //UI that appears when game is paused (the Pause Menu)
+        
+        //PAUSE UI 
         pausedUIObjects = GameObject.FindGameObjectsWithTag("ShowOnPause");
 
-        HideWhenNotPaused();
-
-
-        //................................
-        //GAME UI that disappears when game is paused
+        //GAME UI 
         gameplayUIObjects = GameObject.FindGameObjectsWithTag("HideOnPause");
 
-        //................................
-        //MENU UI for start screen and end-of-game screen
-        startScreenUIObjects = GameObject.FindGameObjectsWithTag("StartScreenElements");
 
-        //................................
-        //MENU UI for start screen and end-of-game screen
+        //VICTORY UI 
         endScreenUIObjects = GameObject.FindGameObjectsWithTag("EndScreenElements");
 
-        ShowWhenPlaying();
 
-        ////FINDING OUT IF PLAYER HAS MET WIN CONDITION
-        //GameObject m_PlayerFinishedObject = GameObject.FindGameObjectWithTag("Player");
-        //playerFinished = m_PlayerFinishedObject.GetComponent<PlayerMovement>();
+        m_GameHasStarted = false;
+        m_GameHasEnded = false;
 
-        ////FINDING OUT WHAT PLAYER WON
-        //GameObject rewardObject = GameObject.FindGameObjectWithTag("Jar");
-        //jarsLoot = rewardObject.GetComponent<JarOrbit>();
+        Game_manager = GameManager.GameManagerInstance;
 	}
 	
-    //...............................................................
-    //.................................................... * UPDATE *
+
 	void Update () 
     {
-        //if (playerFinished.m_GameHasEnded == true)
-        //{
-        //    GamePause();
-        //}
+        if (m_FairiesObtained == m_FairiesNeededToWin)
+        {
+            m_GameHasEnded = true;
 
+            m_CountdownTimer = m_CountdownDur;
+            m_CountdownText.text = "END!";
+
+            ShowEndScreen();
+            StartCoroutine(EndTimer());
+        }
+
+        //.............................................. * COUNTDOWN TIMER to begin game *
+        if (hasGameStarted == true)
+        {
+            
+            m_CountdownTimer -= Time.deltaTime;
+
+            if (m_CountdownTimer <= 0)
+            {
+                m_GameHasStarted = true;
+                
+            }
+        }
+
+        if (m_GameHasEnded == false)
+        {
+            if ((m_CountdownTimer >= 1))
+            {
+                m_CountdownText.text = (m_CountdownTimer % 60).ToString("00");
+            }
+            else
+                if ((m_CountdownTimer < 1) && (m_CountdownTimer >= 0))
+            {
+                m_CountdownText.text = "GO!";
+            }
+            else
+                if (m_CountdownTimer < 0)
+            {
+                m_CountdownText.text = "";
+            }
+        }
+
+        //SCORE DISPLAY
+        m_GameReqText.text = (m_FairiesObtained + " / " + m_FairiesNeededToWin);
 	}
 
-    //...............................................................
-    //.......................................... * METHOD : RESTART *
-    //RESTART
-    public void GameRestart()
+    public void GameStart()
     {
-        //SceneManager.LoadScene(LoadLevel(SceneManager.LoadScene(LoadLevel(m_ThisScene))));
-        Application.LoadLevel(Application.loadedLevel);
+        hasGameStarted = true;
     }
 
-    //...............................................................
-    //............................................ * METHOD : PAUSE *
-    //PAUSE
+    //PAUSE THE GAME
     public void GamePause()
     {
         if (Time.timeScale == 1)
         {
-            Time.timeScale = 0;
+            Game_manager.CurrentState = GameManager.GameState.Pause;
 
-            //if (playerFinished.m_GameHasEnded == false)
-           // {
-                ShowOnPause();
+            foreach (GameObject i in pausedUIObjects)
+            {
+            i.SetActive(true);
+            }
 
-                HideWhenPaused();
-
-               // HideEndScreen();
-
-            //}
-            //else if (playerFinished.m_GameHasEnded == true)
-            //{
-            //    goldEarned = jarsLoot.m_TotalScore;
-            //    goldEarnedText = GameObject.Find("GoldEarnedText").GetComponent<Text>();
-            //    goldEarnedText.text = "+" + goldEarned;
-
-
-            //    ShowEndScreen();
-            //}
+            foreach (GameObject i in gameplayUIObjects)
+            {
+            i.SetActive(false);
+            }
+ 
         }
         else if (Time.timeScale == 0)
         {
-            Time.timeScale = 1;
+            Game_manager.CurrentState = GameManager.GameState.Game;
 
-            HideWhenNotPaused();
-
-            ShowWhenPlaying();
-        }
-    }
-
-    //...............................................................
-    //......................... * METHOD : WHAT TO SHOW WHEN PAUSED *
-    //ELEMENTS SHOWN ON PAUSE
-    public void ShowOnPause()
-    {
-        foreach (GameObject i in pausedUIObjects)
-        {
-            i.SetActive(true);
-        }
-    }
-
-    //...............................................................
-    //........................ * METHOD : WHAT TO SHOW WHEN PLAYING *
-    //ELEMENTS HIDDEN WHEN NOT PAUSED
-    public void HideWhenNotPaused()
-    {
-        foreach (GameObject i in pausedUIObjects)
-        {
-            i.SetActive(false);
-        }
-    }
-
-    //...............................................................
-    //....................................... * METHOD : LOAD LEVEL *
-    //LOADING LEVEL
-    public void LoadLevel(string level)
-    {
-        SceneManager.LoadScene(level);
-    }
-
-
-    //OPPOSITE
-    //...............................................................
-    //......................... * METHOD : WHAT TO SHOW WHEN PLAYING *
-    //ELEMENTS SHOWN ON PAUSE
-    public void ShowWhenPlaying()
-    {
-        foreach (GameObject i in gameplayUIObjects)
-        {
-            i.SetActive(true);
-        }
-    }
-
-    //...............................................................
-    //......................... * METHOD : WHAT TO HIDE WHEN PAUSED *
-    //ELEMENTS HIDDEN WHEN NOT PAUSED
-    public void HideWhenPaused()
-    {
-        foreach (GameObject i in gameplayUIObjects)
-        {
-            i.SetActive(false);
-        }
-    }
-
-
-
-
-    //...............................................................
-    //............................. * METHOD : SHOW ON START SCREEN *
-    public void ShowStartScreen()
-    {
-        hasGameStarted = false;
-
-        foreach (GameObject i in startScreenUIObjects)
-        {
-            i.SetActive(true);
-        }
-    }
-
-    //...............................................................
-    //................................ * METHOD : HIDE START SCREEN *
-    public void HideStartScreen()
-    {
-        foreach (GameObject i in startScreenUIObjects)
-        {
-            if (hasGameStarted == false)
+            foreach (GameObject i in pausedUIObjects)
             {
-                //REMOVE THIS ONCE YOU PUT THE DIALOGUE IN
-                hasGameStarted = true;
-                i.SetActive(false);
+            i.SetActive(false);
+            }
+
+            foreach (GameObject i in gameplayUIObjects)
+            {
+            i.SetActive(true);
             }
         }
     }
@@ -217,14 +161,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //...............................................................
-    //.................................. * METHOD : HIDE END SCREEN *
-    public void HideEndScreen()
+    IEnumerator EndTimer()
     {
-        foreach (GameObject i in endScreenUIObjects)
-        {
-            i.SetActive(false);
-        }
+        yield return new WaitForSeconds(5.0f);
+        Game_manager.setCurrentScene("AB_Lobby");
     }
 
 

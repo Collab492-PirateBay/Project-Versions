@@ -6590,6 +6590,7 @@ MonoBehaviour:
   resultsScreen_LobbyButton: {fileID: 648862383}
   resultsScreen_GoldImageBox: {fileID: 735912998}
   m_GoldText: {fileID: 2047259929}
+  menuButton: {fileID: 1197491908}
   middleScreen_Text: {fileID: 1771573993}
   m_CollectorReading: {fileID: 1994202878}
 --- !u!4 &308596004
@@ -24391,7 +24392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_anyButton: {fileID: 1197491911}
   m_button: {fileID: 0}
-  sceneName: AB_Lobby
+  sceneName: AB_Lobby(new)
   m_buttonSFX: {fileID: 0}
   Game_manager: {fileID: 0}
 --- !u!114 &1197491911

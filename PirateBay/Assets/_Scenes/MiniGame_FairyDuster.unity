@@ -8049,7 +8049,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_anyButton: {fileID: 1148146272}
   m_button: {fileID: 0}
-  sceneName: '"AB_Lobby"'
+  sceneName: AB_Lobby(new)
   m_buttonSFX: {fileID: 0}
   Game_manager: {fileID: 0}
 --- !u!114 &1148146272

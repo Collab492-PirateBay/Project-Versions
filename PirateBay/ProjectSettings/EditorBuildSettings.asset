@@ -8,10 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/_Scenes/Network/Controller.unity
     guid: 4f053ccdd57dfc745af4d4ceeac72622
-  - enabled: 0
-    path: Assets/_Scenes/AB_Lobby.unity
-    guid: f2b3e9ac5f8d17a4a8b4914ef3874605
+  - enabled: 1
+    path: Assets/_Scenes/AB_Lobby(new).unity
+    guid: 78780881e832fa24092eaf22766e8d0c
   - enabled: 1
     path: Assets/_Scenes/MiniGame_FairyDuster.unity
     guid: 536b63d031afe7444b13ea7a8f174513
+  - enabled: 1
+    path: Assets/_Scenes/MiniGame_BalloonShark.unity
+    guid: 016a45fdb3dde874e9aea9dd02d55bf7
   m_configObjects: {}

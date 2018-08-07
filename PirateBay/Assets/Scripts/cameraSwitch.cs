@@ -56,7 +56,7 @@ public class cameraSwitch : MonoBehaviour
     void Update()
     {
         lookatPoint = GameObject.Find("SM_Prop_Fountain_01").transform.position;
-        GameslookAtPoint = GameObject.Find("SM_Prop_Crate_03").transform.position;
+        GameslookAtPoint = GameObject.Find("GamesLookAtPoint").transform.position;
 
         originalPoint = GameObject.Find("CamOriginalPOS").transform.position;
         rightPoint = GameObject.Find("CityCam").transform.position;

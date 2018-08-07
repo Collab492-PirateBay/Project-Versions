@@ -24,9 +24,12 @@ public class FairyPoof : MonoBehaviour {
 
     public IEnumerator explodeBody()
     {
-        Instantiate(smoke, new Vector3(transform.position.x, transform.position.y - 1, transform.position.z-0.5f), Quaternion.identity);
+        var smoker  = Instantiate(smoke, new Vector3(transform.position.x, transform.position.y - 1, transform.position.z-0.5f), Quaternion.identity);
+        smoker.transform.parent = gameObject.transform;
         yield return new WaitForSeconds(waitTime);
-        Instantiate(explosion, transform.position, Quaternion.identity);
+        var exploder = Instantiate(explosion, transform.position, Quaternion.identity);
+        exploder.transform.parent = gameObject.transform;
+        yield return new WaitForSeconds(2.0f);
         Destroy(gameObject);
     }
 }

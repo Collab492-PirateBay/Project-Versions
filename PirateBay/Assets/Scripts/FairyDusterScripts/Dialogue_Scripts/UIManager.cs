@@ -44,7 +44,8 @@ public class UIManager : MonoBehaviour
                 goldEarnedTextShadow,
                 totalGoldText,
                 totalGoldTextShadow,
-                totalGoldAdded;
+                totalGoldAdded,
+                tutorialText;
     public GameObject notifyText;
 
 
@@ -75,15 +76,17 @@ public class UIManager : MonoBehaviour
 
 	void Update () 
     {
-        if (m_FairiesObtained == m_FairiesNeededToWin)
+        if (m_FairiesObtained >= m_FairiesNeededToWin)
         {
+            if(!m_GameHasEnded)
+                 StartCoroutine("EndTimer");
             m_GameHasEnded = true;
-
+            
             m_CountdownTimer = m_CountdownDur;
 
             totalGoldAdded.text = "+ " + goldEarned;
             //ShowEndScreen();
-            StartCoroutine(EndTimer());
+           
         }
 
         //.............................................. * COUNTDOWN TIMER to begin game *
@@ -163,8 +166,9 @@ public class UIManager : MonoBehaviour
 
     IEnumerator EndTimer()
     {
+        StartCoroutine("goldObtained");
         yield return new WaitForSeconds(2.5f);
-        m_CountdownText.text = "END!";
+        m_CountdownText.text = "You Win!";
         yield return new WaitForSeconds(1.5f);
         //Game_manager.setCurrentScene("AB_Lobby");
         endScreenUIObjects.SetActive(true);
@@ -174,9 +178,19 @@ public class UIManager : MonoBehaviour
         totalGoldTextShadow.text = "" + Game_manager.goldEarnedLifetime;
     }
 
+    IEnumerator tutorialTextDisplay()
+    {
+        tutorialText.text = "Good Job!";
+        yield return new WaitForSeconds(2.5f);
+        tutorialText.text = "Find the next Fairy Nest!";
+        yield return new WaitForSeconds(2.5f);
+        tutorialText.text = "";
+    }
+
     public IEnumerator goldObtained()
     {
         notifyText.SetActive(true);
+        StartCoroutine("tutorialTextDisplay");
         yield return new WaitForSeconds(2.5f);
         notifyText.SetActive(false);
         goldEarned += 500;

@@ -112,6 +112,6 @@ public class TypeWriterAnimation : MonoBehaviour
 
 	private void Update()
 	{
-        Debug.Log(dialogueGroup.Count);
+        //Debug.Log(dialogueGroup.Count);
     }
 }

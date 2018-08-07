@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/_Scenes/Network/Controller.unity
     guid: 4f053ccdd57dfc745af4d4ceeac72622
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Scenes/AB_Lobby.unity
     guid: f2b3e9ac5f8d17a4a8b4914ef3874605
   - enabled: 1

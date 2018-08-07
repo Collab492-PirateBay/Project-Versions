@@ -19,7 +19,7 @@ public class FairyPoof : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        transform.rotation = new Quaternion(0,0,0,0);
 	}
 
     public IEnumerator explodeBody()

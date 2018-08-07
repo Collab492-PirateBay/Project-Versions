@@ -37,6 +37,7 @@ public class SceneManagement_SD : MonoBehaviour
 
     public GameObject gameplayScreen_PauseButton = null;
     public GameObject gameplayScreen_ScoreBox = null;
+    public GameObject gameplayScreen_GoldBox = null;
 
     public GameObject pauseScreen_PlayButton = null;
     public GameObject pauseScreen_ReplayButton = null;
@@ -50,6 +51,16 @@ public class SceneManagement_SD : MonoBehaviour
 
     public Text middleScreen_Text;
 
+    //............................................................
+    // BACKGROUND AUDIO / MUSIC
+
+    [SerializeField] private AudioSource backgroundMusicAudioSource;
+    [SerializeField] private AudioClip bgMusic_TitleScreen = null;
+    [SerializeField] private AudioClip bgMusic_Gameplay = null;
+    [SerializeField] private AudioClip bgMusic_ResultsScreen = null;
+
+
+
     //.....
     // DIALOGUE
 
@@ -62,7 +73,7 @@ public class SceneManagement_SD : MonoBehaviour
 
     //[SerializeField] private GameObject m_NextIndicator = null;
 
-
+    //............................................................
     // RELATIVE SCRIPTS
 
     public Collector m_CollectorReading;
@@ -76,6 +87,9 @@ public class SceneManagement_SD : MonoBehaviour
 
         GameObject collectorObject = GameObject.FindGameObjectWithTag("Collector");
         m_CollectorReading = collectorObject.GetComponent<Collector>();
+
+        GameObject bgAudioObject = GameObject.Find("BG_Music");
+        backgroundMusicAudioSource = bgAudioObject.GetComponent<AudioSource>();
     }
 
     //............................................................
@@ -88,6 +102,13 @@ public class SceneManagement_SD : MonoBehaviour
         {
             m_StartScreenActive = true;
             middleScreen_Text.text = "";
+
+            backgroundMusicAudioSource.clip = bgMusic_TitleScreen;
+            if (backgroundMusicAudioSource.isPlaying == false)
+            {
+                backgroundMusicAudioSource.Play();
+            }
+
             startScreen_BGSplash.SetActive(true);
             startScreen_LobbyButton.SetActive(true);
             startScreen_TapAnywhereImage.SetActive(true);
@@ -135,6 +156,11 @@ public class SceneManagement_SD : MonoBehaviour
         // CALIBRATION SEGMENT
         if (m_OrderInScene == 4)
         {
+            if (backgroundMusicAudioSource.isPlaying == true)
+            {
+                backgroundMusicAudioSource.Stop();
+            }
+
             m_CalibrationActive = true;
             middleScreen_Text.text = "Keep Steady!";
         }
@@ -158,15 +184,24 @@ public class SceneManagement_SD : MonoBehaviour
         {
             m_GameplayActive = true;
             instructionScreen_BGSplash.SetActive(false);
+
+            backgroundMusicAudioSource.clip = bgMusic_Gameplay;
+            if (backgroundMusicAudioSource.isPlaying == false)
+            {
+                backgroundMusicAudioSource.Play();
+            }
+
             middleScreen_Text.text = "";
             gameplayScreen_PauseButton.SetActive(true);
             gameplayScreen_ScoreBox.SetActive(true);
+            gameplayScreen_GoldBox.SetActive(true);
         }
         else if (m_OrderInScene != 6)
         {
             m_GameplayActive = false;
             gameplayScreen_PauseButton.SetActive(false);
             gameplayScreen_ScoreBox.SetActive(false);
+            gameplayScreen_GoldBox.SetActive(false);
         }
 
         // PAUSE SCREEN
@@ -195,11 +230,28 @@ public class SceneManagement_SD : MonoBehaviour
         else if (m_OrderInScene != 8)
         {
             m_VictoryScreenActive = false;
+            if (m_OrderInScene != 6)
+            {
+                if (backgroundMusicAudioSource.clip == bgMusic_Gameplay)
+                {
+                    backgroundMusicAudioSource.Stop();
+                    backgroundMusicAudioSource.clip = bgMusic_ResultsScreen;
+                }
+            }
+
+
         }
 
          //RESULTS
         if (m_OrderInScene == 9)
         {
+      
+
+            if (backgroundMusicAudioSource.isPlaying == false)
+            {
+                backgroundMusicAudioSource.Play();
+            }
+
             m_ResultsScreenActive = true;
             instructionScreen_BGSplash.SetActive(true);
             middleScreen_Text.text = "";

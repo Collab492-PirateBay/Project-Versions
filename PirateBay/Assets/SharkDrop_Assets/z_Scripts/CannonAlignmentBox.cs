@@ -16,6 +16,13 @@ public class CannonAlignmentBox : MonoBehaviour
     [SerializeField] private float m_FiringCooldownTimer;
     [SerializeField] private float m_FiringCooldownDur = 0.0f;
 
+    public BundleOfCoins m_CoinBundlePrefab;
+    [SerializeField] private float m_SpawnPosition;
+
+    [SerializeField] public GameObject confettiPrefab;
+
+    //[SerializeField] private GameObject fx_CannonFire;
+    //[SerializeField] private Light fx_CannonLight;
 
     //........................................................
     // RELATIVE SCRIPTS
@@ -27,6 +34,9 @@ public class CannonAlignmentBox : MonoBehaviour
     {
         GameObject cannonObject = GameObject.FindGameObjectWithTag("Cannon");
         m_Cannon = cannonObject.GetComponent<CannonMovement>();
+
+        //fx_CannonFire.gameObject.SetActive(false);
+        //fx_CannonLight.gameObject.SetActive(false);
     }
 
     //............................................................
@@ -56,10 +66,13 @@ public class CannonAlignmentBox : MonoBehaviour
         GameObject colliderObject;
         colliderObject = colliderBox.gameObject;
 
-        BalloonedObject balloonObject;
-        balloonObject = colliderObject.GetComponent<BalloonedObject>();
+        BalloonedShark sharkObject;
+        sharkObject = colliderObject.GetComponent<BalloonedShark>();
 
-        if (balloonObject != null)
+        BalloonedChest treasureChestObject;
+        treasureChestObject = colliderObject.GetComponent<BalloonedChest>();
+
+        if (sharkObject != null)
         {
             if (m_FiringCooldownTimer <= 0)
             {
@@ -69,13 +82,52 @@ public class CannonAlignmentBox : MonoBehaviour
                 m_Cannon.FireCannon();
 
                 //make prefab particle fx smoke
-                //pop balloons
 
-                balloonObject.m_IsGoingUp = false;
-                balloonObject.m_HangTimer = balloonObject.m_HangDur;
+                GameObject confettiParticleFX;
+                confettiParticleFX = Instantiate(confettiPrefab);
+                confettiParticleFX.transform.position = new Vector3(sharkObject.transform.position.x, sharkObject.transform.position.y + m_SpawnPosition, sharkObject.transform.position.z);
+
+
+                sharkObject.m_IsGoingUp = false;
+                sharkObject.m_HangTimer = sharkObject.m_HangDur;
+
+                m_FiringCooldownTimer = m_FiringCooldownDur;
+            }
+        }
+
+        if (treasureChestObject != null)
+        {
+            if (m_FiringCooldownTimer <= 0)
+            {
+                m_IsFiring = true;
+
+                m_Cannon.m_PlayerControlsAreActive = false;
+                m_Cannon.FireCannon();
+
+                //CannonFireAndSmoke();
+
+                GameObject confettiParticleFX;
+                confettiParticleFX = Instantiate(confettiPrefab);
+                confettiParticleFX.transform.position = new Vector3(treasureChestObject.transform.position.x, treasureChestObject.transform.position.y + m_SpawnPosition, treasureChestObject.transform.position.z);
+
+                BundleOfCoins coinBundleObject;
+                coinBundleObject = Instantiate(m_CoinBundlePrefab) as BundleOfCoins;
+                coinBundleObject.transform.position = new Vector3(treasureChestObject.transform.position.x, treasureChestObject.transform.position.y + m_SpawnPosition, treasureChestObject.transform.position.z);
+
+                treasureChestObject.m_IsGoingUp = false;
+                treasureChestObject.m_HangTimer = treasureChestObject.m_HangDur;
 
                 m_FiringCooldownTimer = m_FiringCooldownDur;
             }
         }
     }
+
+    //IEnumerator CannonFireAndSmoke()
+    //{
+    //    fx_CannonFire.gameObject.SetActive(true);
+    //    fx_CannonLight.gameObject.SetActive(true);
+    //    yield return new WaitForSeconds(1.5f);
+    //    fx_CannonFire.gameObject.SetActive(false);
+    //    fx_CannonLight.gameObject.SetActive(false);
+    //}
 }

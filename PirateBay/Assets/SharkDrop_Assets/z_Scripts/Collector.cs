@@ -10,7 +10,6 @@ public class Collector : MonoBehaviour
 {
     //........................................................
     // VARIABLES
-
     [SerializeField] private int m_CollectionsCounter = 0;
     [SerializeField] private int m_GameOverRequirement = 4;
 
@@ -18,6 +17,10 @@ public class Collector : MonoBehaviour
     public Text m_ScoreTextShadow;
 
     public bool m_GameIsOver = false;
+
+    public int m_GoldEarned = 0;
+    public Text m_GoldEarnedText;
+    public Text m_GoldEarnedTextShadow;
 
     //........................................................
     // RELATIVE SCRIPTS
@@ -47,6 +50,9 @@ public class Collector : MonoBehaviour
 
         m_ScoreText.text = m_CollectionsCounter + " / " + m_GameOverRequirement;
         m_ScoreTextShadow.text = m_CollectionsCounter + " / " + m_GameOverRequirement;
+
+        m_GoldEarnedText.text = "+ " + m_GoldEarned;
+        m_GoldEarnedTextShadow.text = "+ " + m_GoldEarned;
     }
 
     //............................................................
@@ -57,10 +63,13 @@ public class Collector : MonoBehaviour
         GameObject colliderObject;
         colliderObject = colliderBox.gameObject;
 
-        BalloonedObject balloonObject;
-        balloonObject = colliderObject.GetComponent<BalloonedObject>();
+        BalloonedShark sharkObject;
+        sharkObject = colliderObject.GetComponent<BalloonedShark>();
 
-        if (balloonObject != null)
+        BalloonedChest chestObject;
+        chestObject = colliderObject.GetComponent<BalloonedChest>();
+
+        if (sharkObject != null)
         {
             if (m_Spawner.m_SpawnDelayTimer <= 0)
             {
@@ -71,12 +80,31 @@ public class Collector : MonoBehaviour
             {
                 m_CollectionsCounter += 1;
 
-                Destroy(balloonObject.gameObject);
+                m_CannonMovement.m_PlayerControlsAreActive = true;
+
+                m_Spawner.m_IsReSpawning = true;
+            }
+
+            Destroy(sharkObject.gameObject);
+        }
+
+        if (chestObject != null)
+        {
+            if (m_Spawner.m_SpawnDelayTimer <= 0)
+            {
+                m_Spawner.m_SpawnDelayTimer = m_Spawner.m_SpawnDelayDuration;
+            }
+
+            if (m_Spawner.m_IsReSpawning == false)
+            {
+                m_GoldEarned += Random.Range(50, 201);
 
                 m_CannonMovement.m_PlayerControlsAreActive = true;
 
                 m_Spawner.m_IsReSpawning = true;
             }
+
+            Destroy(chestObject.gameObject);
         }
     }
 }

@@ -520,14 +520,14 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 60880051}
-  m_LocalRotation: {x: 0.38268343, y: -0, z: -0, w: 0.92387956}
+  m_LocalRotation: {x: -0.38268343, y: 0, z: 0, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 993.7489, y: 993.74915, z: 993.74915}
   m_Children:
   - {fileID: 1468147556}
   m_Father: {fileID: 1025144455}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -45, y: 0, z: 0}
 --- !u!82 &60880053
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9650,7 +9650,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4055348500604504, guid: e95d382e409e63f429420c2005702c5f, type: 2}
       propertyPath: m_LocalRotation.x
-      value: 0.38268343
+      value: -0.38268343
       objectReference: {fileID: 0}
     - target: {fileID: 4055348500604504, guid: e95d382e409e63f429420c2005702c5f, type: 2}
       propertyPath: m_LocalRotation.y
@@ -9670,7 +9670,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4055348500604504, guid: e95d382e409e63f429420c2005702c5f, type: 2}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 45
+      value: -45
       objectReference: {fileID: 0}
     - target: {fileID: 1252799133803896, guid: e95d382e409e63f429420c2005702c5f, type: 2}
       propertyPath: m_IsActive
@@ -12439,14 +12439,14 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1832053409}
-  m_LocalRotation: {x: 0.38268343, y: -0, z: -0, w: 0.92387956}
+  m_LocalRotation: {x: -0.38268343, y: 0, z: 0, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 993.7489, y: 993.74915, z: 993.74915}
   m_Children:
   - {fileID: 1884670671}
   m_Father: {fileID: 48665277}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -45, y: 0, z: 0}
 --- !u!82 &1832053411
 AudioSource:
   m_ObjectHideFlags: 0

@@ -1,19 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
-    <ImageTarget name="marker4" size="1.000000 1.000000" />
-    <ImageTarget name="marker3" size="1.000000 1.000000" />
-    <ImageTarget name="marker2" size="1.000000 1.000000" />
-    <ImageTarget name="marker1" size="1.000000 1.000000" />
-    <ImageTarget name="3-01" size="1.000000 1.294118" />
-    <ImageTarget name="2-01" size="1.000000 1.294118" />
-    <ImageTarget name="1-01" size="1.000000 1.294118" />
-    <ImageTarget name="sadshark8bit" size="1.000000 1.051858" />
-    <ImageTarget name="AB_Ancor" size="1.000000 1.068403" />
-    <ImageTarget name="VuforiaTargetWheel" size="1.000000 1.013136" />
-    <ImageTarget name="Badges6" size="1.000000 1.087629" />
-    <ImageTarget name="Badges2" size="1.000000 0.768908" />
-    <ImageTarget name="Badges1" size="1.000000 0.842640" />
-    <ImageTarget name="Badges5" size="1.000000 1.013216" />
+    <ImageTarget name="Badge_Cannon" size="1.000000 1.080831" />
+    <ImageTarget name="Badge_Anchor" size="1.000000 1.080831" />
+    <ImageTarget name="ARCodeTest_1" size="1.000000 1.080831" />
   </Tracking>
 </QCARConfig>

@@ -107,14 +107,14 @@ public class GameManager : MonoBehaviour {
                     {
                         //Debug.Log("Switch to the Main Menu state.");
 
-                        //BGM.clip = Menu_music;
-                        //BGM.Play();
+                        BGM.clip = Menu_music;
+                        BGM.Play();
 
                         if (m_previousState == GameState.Pause)
                         {
                             Time.timeScale = 1;
                         }
-                        SceneManager.LoadScene(SceneManager.GetSceneByBuildIndex(0).name);
+                        //SceneManager.LoadScene(SceneManager.GetSceneByBuildIndex(0).name);
 
                         break;
                     }
@@ -123,25 +123,42 @@ public class GameManager : MonoBehaviour {
                 case GameState.Game:
                     {
                         //Debug.Log("Switch to the Game state");
+                        
 
-                        if (m_previousState != GameState.Pause)
+                        if (m_previousState == GameState.Load)
                         {
-                            //BGM.clip = Game_music;
-                            //BGM.Play();
+                            BGM.clip = Game_music;
+                            BGM.Play();
+                            //Debug.Log("change level");
                         }
                         if (m_previousState == GameState.Pause)
                         {
                             Time.timeScale = 1;
-                            //BGM.Play();
+                            BGM.Play();
                         }
-
+                        
                         break;
                     }
 
                 case GameState.Load:
                     {
                         SceneManager.LoadScene(currentScenename);
-                        m_currentState = GameState.Game;
+                        if (m_previousState == GameState.Menu)
+                        {
+                            m_currentState = GameState.Game;
+                            BGM.clip = Game_music;
+                            BGM.Play();
+                            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+                        }
+                        if (m_previousState == GameState.Game || m_previousState == GameState.Pause)
+                        {
+                            m_currentState = GameState.Menu;
+                            BGM.clip = Menu_music;
+                            BGM.Play();
+                            Screen.sleepTimeout = SleepTimeout.SystemSetting;
+                        }
+                        
+                        
                     }
 
                     break;
@@ -151,7 +168,8 @@ public class GameManager : MonoBehaviour {
                         //Debug.Log("Switch to the Pause state.");
 
                         Time.timeScale = 0;
-                        //BGM.Stop();
+                        Screen.sleepTimeout = SleepTimeout.SystemSetting;
+                        BGM.Stop();
                         //Activate UI for pause menu
 
                         break;

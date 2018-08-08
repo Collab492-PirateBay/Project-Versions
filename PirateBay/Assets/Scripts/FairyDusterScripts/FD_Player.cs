@@ -54,11 +54,14 @@ public class FD_Player : MonoBehaviour {
 		if(targetNumb < 3)
 		{
 			distances[targetNumb] = Vector3.Distance(gameObject.transform.position, fairyTargets[targetNumb].transform.position);
+            fairyTargets[targetNumb].GetComponent<FairyPoof>().fairy_queen.GetComponent<Animator>().SetFloat("Proximity", distances[targetNumb]);
 
-			if(distances[targetNumb] < distanceActive || Test)
+            if (distances[targetNumb] < distanceActive || Test)
 			{
 				StartCoroutine("fairyCount");
-				mopAnim.Play();
+                fairyTargets[targetNumb].GetComponent<FairyPoof>().StartCoroutine("fairyScreech");
+
+                mopAnim.Play();
 				collectingStarted = true;
 				/*
 				if(m_timeElapsed > 5 && !UI_manager.m_GameHasEnded)
@@ -73,8 +76,9 @@ public class FD_Player : MonoBehaviour {
 				{
 					//mopAnim.Rewind();
 					mopAnim.Stop();
-					
-					collectingStarted = false;
+                    fairyTargets[targetNumb].GetComponent<FairyPoof>().StopCoroutine("fairyScreech");
+
+                    collectingStarted = false;
 					StopCoroutine("fairyCount");
 				}
 			}

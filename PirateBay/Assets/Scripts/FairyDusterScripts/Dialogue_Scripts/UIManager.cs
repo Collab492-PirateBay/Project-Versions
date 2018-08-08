@@ -190,7 +190,8 @@ public class UIManager : MonoBehaviour
     public IEnumerator goldObtained()
     {
         notifyText.SetActive(true);
-        StartCoroutine("tutorialTextDisplay");
+        if(!m_GameHasEnded)
+            StartCoroutine("tutorialTextDisplay");
         yield return new WaitForSeconds(2.5f);
         notifyText.SetActive(false);
         goldEarned += 500;

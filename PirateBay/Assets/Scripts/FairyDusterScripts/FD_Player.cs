@@ -15,7 +15,8 @@ public class FD_Player : MonoBehaviour {
 	[SerializeField]
     private int targetNumb = 0;
     public float waitTime;
-
+	private bool firstpass;
+	
 	public bool Test;
 
 	// Use this for initialization
@@ -58,8 +59,13 @@ public class FD_Player : MonoBehaviour {
 
             if (distances[targetNumb] < distanceActive || Test)
 			{
+				
 				StartCoroutine("fairyCount");
-                fairyTargets[targetNumb].GetComponent<FairyPoof>().StartCoroutine("fairyScreech");
+				if(!firstpass)
+				{
+                	fairyTargets[targetNumb].GetComponent<FairyPoof>().StartCoroutine("fairyScreech");
+					firstpass = true;
+				}
 
                 mopAnim.Play();
 				collectingStarted = true;
@@ -77,7 +83,7 @@ public class FD_Player : MonoBehaviour {
 					//mopAnim.Rewind();
 					mopAnim.Stop();
                     fairyTargets[targetNumb].GetComponent<FairyPoof>().StopCoroutine("fairyScreech");
-
+					firstpass = false;
                     collectingStarted = false;
 					StopCoroutine("fairyCount");
 				}
@@ -87,7 +93,7 @@ public class FD_Player : MonoBehaviour {
 		 {
 		 	mopAnim.Stop();
 			StopCoroutine("fairyCount");
-		}
+		 }
         //Debug.Log(targetNumb);
 	}
 
@@ -95,7 +101,7 @@ public class FD_Player : MonoBehaviour {
 	{
 		UI_manager.m_FairiesObtained += 1;
         fairyTargets[targetNumb].GetComponent<FairyPoof>().StartCoroutine("explodeBody");
-        //Debug.Log("ran once");
+        
         Test = false;
         //if(UI_manager.m_GameHasEnded == false)
 		if(targetNumb < 3)

@@ -1,0 +1,145 @@
+fileFormatVersion: 2
+guid: 825d00c355dfe3e47983fbb3d05ae186
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Baloon_Shark1
+    100002: fin_01
+    100004: fin_01_l
+    100006: fin_01_r
+    100008: fin_02
+    100010: fin_02_l
+    100012: fin_02_r
+    100014: fin_03
+    100016: fin_03_l
+    100018: fin_03_r
+    100020: head_01
+    100022: jaw_01
+    100024: jaw_02
+    100026: neck_01
+    100028: nose_01
+    100030: pelvis
+    100032: root
+    100034: //RootNode
+    100036: spine_01
+    100038: spine_02
+    100040: spine_03
+    100042: spine_04
+    100044: tail_01
+    100046: tail_02
+    100048: tail_03
+    100050: tail_04
+    100052: tail_05
+    400000: Baloon_Shark1
+    400002: fin_01
+    400004: fin_01_l
+    400006: fin_01_r
+    400008: fin_02
+    400010: fin_02_l
+    400012: fin_02_r
+    400014: fin_03
+    400016: fin_03_l
+    400018: fin_03_r
+    400020: head_01
+    400022: jaw_01
+    400024: jaw_02
+    400026: neck_01
+    400028: nose_01
+    400030: pelvis
+    400032: root
+    400034: //RootNode
+    400036: spine_01
+    400038: spine_02
+    400040: spine_03
+    400042: spine_04
+    400044: tail_01
+    400046: tail_02
+    400048: tail_03
+    400050: tail_04
+    400052: tail_05
+    2100000: lambert4
+    4300000: Baloon_Shark1
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: Baloon_Shark1
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

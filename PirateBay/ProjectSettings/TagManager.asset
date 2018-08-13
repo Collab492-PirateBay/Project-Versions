@@ -12,6 +12,10 @@ TagManager:
   - EndScreenElements
   - Fairy
   - CatchBox
+  - BalloonShark
+  - CannonBall
+  - StoryIntro
+  - Target
   layers:
   - Default
   - TransparentFX

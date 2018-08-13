@@ -91,7 +91,7 @@ public class WingFlutter : MonoBehaviour
             transform.Rotate(-aFlapVector);
         }
 
-
+        /*
         //WING COLOR CHANGE
         //FAIRY TYPE DETERMINES...
         if (ownerOfTheseWings.m_FairyIsRed == true)
@@ -110,5 +110,6 @@ public class WingFlutter : MonoBehaviour
         {
             m_FairyWingRenderer.sharedMaterial = m_FairyWingMaterial[3];
         }
+        */
     }
 }

@@ -31,9 +31,10 @@ public class TypeWriterAnimation : MonoBehaviour
     public bool m_DialogueIsDone = false;
 
 
-	void Start () 
+	private void Start () 
     {
         dialogueGroup = new Queue<string>();
+        
         //npcAvatarImageRenderer = GetComponent<Renderer>();
         //npcAvatarImageRenderer.sharedMaterial = npcAvatarImageMaterial;
 
@@ -66,6 +67,7 @@ public class TypeWriterAnimation : MonoBehaviour
     //BEGIN DIALOGUE BOX
     public void BeginDialogue(Dialogue dialogue)
     {
+        dialogueGroup = new Queue<string>();
         animator.SetBool("IsOpen", true);
 
         //npcAvatarImageMaterial = dialogue.npcAvatarImage;
@@ -79,13 +81,14 @@ public class TypeWriterAnimation : MonoBehaviour
         {
             dialogueGroup.Enqueue(sentence);
         }
-
+ 
         DisplayNextDialogueGroup();
     }
 
     //MOVE ON TO NEXT DIALOGUE BOX
     public void DisplayNextDialogueGroup()
     {
+        Debug.Log(dialogueGroup.Count);
         if (dialogueGroup.Count == 0)
         {
             EndDialogue();
@@ -95,7 +98,7 @@ public class TypeWriterAnimation : MonoBehaviour
         string sentence = dialogueGroup.Dequeue();
         //the below stops the typewriter text from typing the next dialogue box over the present one
         StopAllCoroutines();
-        dialogueText.text = sentence;  //REPLACE THIS WITH THE COROUTINE BELOW FOR THE TYPEWRITER ANIMATION
+        //dialogueText.text = sentence;  //REPLACE THIS WITH THE COROUTINE BELOW FOR THE TYPEWRITER ANIMATION
         StartCoroutine(VisibleText(sentence));
     }
 
@@ -107,14 +110,8 @@ public class TypeWriterAnimation : MonoBehaviour
     }
 
 
-	//private void Update()
-	//{
- //       if (m_IsAbleToContinue == true)
- //       {
- //           if (Input.GetMouseButtonUp(0))
- //           {
- //               DisplayNextDialogueGroup();
- //           }
- //       }
-	//}
+	private void Update()
+	{
+        //Debug.Log(dialogueGroup.Count);
+    }
 }

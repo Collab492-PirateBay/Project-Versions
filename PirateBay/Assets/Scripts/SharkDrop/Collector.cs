@@ -28,6 +28,8 @@ public class Collector : MonoBehaviour
 
     public CannonMovement m_CannonMovement;
 
+    public UIManager m_uimanager;
+
     //............................................................
     //.................................................. * START *
     void Start()
@@ -37,12 +39,15 @@ public class Collector : MonoBehaviour
 
         GameObject cannonObject = GameObject.FindGameObjectWithTag("Cannon");
         m_CannonMovement = cannonObject.GetComponent<CannonMovement>();
+
+        m_uimanager = GameObject.FindGameObjectWithTag("uiManager").GetComponent<UIManager>();
     }
 
     //............................................................
     //................................................. * UPDATE *
     void Update()
     {
+        /*
         if (m_CollectionsCounter >= m_GameOverRequirement)
         {
             m_GameIsOver = true;
@@ -53,6 +58,7 @@ public class Collector : MonoBehaviour
 
         m_GoldEarnedText.text = "+ " + m_GoldEarned;
         m_GoldEarnedTextShadow.text = "+ " + m_GoldEarned;
+        */
     }
 
     //............................................................
@@ -78,8 +84,9 @@ public class Collector : MonoBehaviour
 
             if (m_Spawner.m_IsReSpawning == false)
             {
-                m_CollectionsCounter += 1;
-
+                //m_CollectionsCounter += 1;
+                m_uimanager.m_NumberObtained += 1;
+                m_uimanager.StartCoroutine("tutorialTextDisplay");
                 m_CannonMovement.m_PlayerControlsAreActive = true;
 
                 m_Spawner.m_IsReSpawning = true;
@@ -97,8 +104,8 @@ public class Collector : MonoBehaviour
 
             if (m_Spawner.m_IsReSpawning == false)
             {
-                m_GoldEarned += Random.Range(50, 201);
-
+                //m_GoldEarned += Random.Range(50, 201);
+                m_uimanager.StartCoroutine("goldObtained");
                 m_CannonMovement.m_PlayerControlsAreActive = true;
 
                 m_Spawner.m_IsReSpawning = true;

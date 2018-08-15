@@ -30,6 +30,19 @@ public class Spawner : MonoBehaviour
     private int m_ChestMax = 2;
     private int m_SpawnCount = 0;
 
+    // SPLASHING
+    public bool m_SplashingDisabled = true;
+    private float m_SplashSafetyTimer;
+    [SerializeField] private float m_SplashSafetyDur = 0.0f;
+
+    public Splash m_SplashPrefab;
+    [SerializeField] private float m_SplashPosition;
+
+    // AUDIO SFX
+    [SerializeField] private AudioSource splashAudioSource = null;
+    [SerializeField] private AudioClip sfx_Splash = null;
+    [SerializeField] public float splash_Volume;
+
     //........................................................
     // SHARED VARIABLES
 
@@ -41,8 +54,9 @@ public class Spawner : MonoBehaviour
     //........................................................
     // RELATIVE SCRIPTS
 
-    public SceneManagement_SD m_SceneManagerRef;
+    //public SceneManagement_SD m_SceneManagerRef;
 
+    private UIManager m_uiManager;
 
     //............................................................
     //.................................................. * START *
@@ -52,9 +66,14 @@ public class Spawner : MonoBehaviour
         m_SpawnLocationID_Previous = Random.Range(1, 5);
         m_SpawnLocationID_Current = Random.Range(1, 5);
         m_SpawnDelayTimer = m_SpawnDelayDuration;
-
+        /*
         GameObject sceneManagerRefObject = GameObject.FindGameObjectWithTag("SceneManager");
         m_SceneManagerRef = sceneManagerRefObject.GetComponent<SceneManagement_SD>();
+        */
+        m_uiManager = GameObject.FindGameObjectWithTag("uiManager").GetComponent<UIManager>();
+
+        GameObject sfxSeaObject = GameObject.Find("sfx_Splash");
+        splashAudioSource = sfxSeaObject.GetComponent<AudioSource>();
     }
 
     //............................................................
@@ -63,7 +82,8 @@ public class Spawner : MonoBehaviour
     {
 
         // CONTROLLING PLAYER INPUT
-        if (m_SceneManagerRef.m_GameplayActive == true)
+        //if (m_SceneManagerRef.m_GameplayActive == true)
+        if(m_uiManager.m_GameHasStarted)
         {
             m_SpawnerIsActive = true;
         }
@@ -142,7 +162,9 @@ public class Spawner : MonoBehaviour
                         }
                     }
 
-                    // SPAWN SHARK
+                    m_SplashSafetyTimer = m_SplashSafetyDur;
+
+                    // SPAWN OBJECT TYPE
 
                     if (m_BalloonedItemID == 1)
                     {
@@ -150,6 +172,7 @@ public class Spawner : MonoBehaviour
                         sharkObject = Instantiate(m_SharkPrefab) as BalloonedShark;
 
                         sharkObject.transform.position = new Vector3(transform.position.x, transform.position.y, (transform.position.z + m_SpawnPosition));
+                        sharkObject.gameObject.SetActive(true);
                     }
                     else if (m_BalloonedItemID == 2)
                     {
@@ -157,7 +180,7 @@ public class Spawner : MonoBehaviour
                         treasureChestObject = Instantiate(m_TreasureChestPrefab) as BalloonedChest;
 
                         treasureChestObject.transform.position = new Vector3(transform.position.x, transform.position.y, (transform.position.z + m_SpawnPosition));
-
+                        treasureChestObject.gameObject.SetActive(true);
                         m_ChestCount += 1;
                     }
 
@@ -174,7 +197,8 @@ public class Spawner : MonoBehaviour
             }
 
 
-            if (m_SceneManagerRef.m_OrderInScene == 9)
+            //if (m_SceneManagerRef.m_OrderInScene == 9)
+            if(m_uiManager.m_GameHasEnded)
             {
                 m_SpawnerIsActive = false;
             }

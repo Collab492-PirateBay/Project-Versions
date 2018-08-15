@@ -11,25 +11,24 @@ public class Ocean : MonoBehaviour
 
     private Vector3 m_WaveDir;
 
+    [SerializeField] private float m_DistanceLimit = -1280.0f;
+    private Vector3 m_SpawnLocation;
+
 
 	void Start () 
     {
-		
+        m_SpawnLocation = new Vector3(-600.0f, 3.4f, 880.0f);
 	}
 	
 	void Update () 
     {
-        //Vector3 waveDirection = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
 
-        ////direction waves are moving
-        //m_WaveDir = waveDirection - this.transform.position;
-
-        ////if the distance between the enemy and it's target is greater than the cushion, then move towards it.
-        //if (Vector3.Distance(transform.position, enemy_TargetHero.position) >= enemy_TargetHeroCushion)
-        //{
-            //move towards target on local z-axis (it moves forward)
             this.transform.Translate(0, 0, m_WaveSpeed * Time.deltaTime);
-        //}
+
+        if (transform.position.z <= m_DistanceLimit)
+        {
+            transform.position = m_SpawnLocation;
+        }
 
 	}
 }

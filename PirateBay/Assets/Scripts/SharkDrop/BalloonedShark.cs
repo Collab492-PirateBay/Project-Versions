@@ -48,8 +48,8 @@ public class BalloonedShark : MonoBehaviour
     {
         m_RigidBody = gameObject.GetComponent<Rigidbody>();
 
-        GameObject sfxBalloonedObject = GameObject.FindWithTag("TreasureChestSounds");
-        balloonObjectAudioSource = sfxBalloonedObject.GetComponent<AudioSource>();
+        //GameObject sfxBalloonedObject = GameObject.FindWithTag("TreasureChestSounds");
+        //balloonObjectAudioSource = sfxBalloonedObject.GetComponent<AudioSource>();
 
         m_SharkAnimator.enabled = true;
     }

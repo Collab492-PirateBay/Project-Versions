@@ -33,6 +33,7 @@ public class CannonMovement : MonoBehaviour
     private float m_FiringCooldown;
     [SerializeField] private float m_FiringDuration = 0.0f;
 
+    public bool m_NeedNewFuse = false;
     public bool m_ShowFuseBurning = false;
     public bool m_TargetIsOnTheLeft = false;
 
@@ -42,22 +43,32 @@ public class CannonMovement : MonoBehaviour
     [SerializeField] private AudioClip sfx_CannonRotation = null;
     [SerializeField] private AudioClip sfx_CannonFire = null;
     [SerializeField] private AudioClip sfx_CannonReload = null;
+    public float cannon_Volume;
      
     //........................................................
     // KEYBOARD VARIABLES (only use for playtesting)
 
-    [SerializeField] private bool keyboardControl;
+    [SerializeField] private bool X_keyboardControl;
 
     //........................................................
     // ACCELEROMETER VARIABLES
     [SerializeField] private bool X_IsAccelerometerON = false;
     private NetworkServerUI netInput = null;
-    private Vector3 accelerometerInput;
+    
+    //private Vector3 accelerometerInput;
 
     private float m_CannonRotationValue = 0.0f;
 
-    [SerializeField] private float accelerometerSafetyCushionLeft = -0.6f;
-    [SerializeField] private float accelerometerSafetyCushionRight = 0.2f;
+    private float accelSafetyPositiveAxis;
+    private float accelSafetyNegativeAxis;
+
+    [SerializeField] private float accelSafetyLeft = -0.6f;
+    [SerializeField] private float accelSafetyRight = 0.2f;
+
+    [SerializeField] private float accelSafetyUp = 0.0f;
+    [SerializeField] private float accelSafetyDown = 0.0f;
+
+    [SerializeField] private bool X_IsPhoneOrientationHorizontal = false;
 
     //........................................................
     // RELATIVE SCRIPTS
@@ -65,12 +76,16 @@ public class CannonMovement : MonoBehaviour
     public SceneManagement_SD m_SceneManager;
     public Spawner cannonRef_Spawner;
 
+    private UIManager m_uiManager;
+
     //............................................................
     //.................................................. * START *
     void Start()
     {
+        /*
         GameObject sceneManagerObject = GameObject.FindGameObjectWithTag("SceneManager");
         m_SceneManager = sceneManagerObject.GetComponent<SceneManagement_SD>();
+        */
 
         GameObject spawnerObject = GameObject.FindGameObjectWithTag("Spawner");
         cannonRef_Spawner = spawnerObject.GetComponent<Spawner>();
@@ -81,6 +96,7 @@ public class CannonMovement : MonoBehaviour
         GameObject lightObject = GameObject.Find("CannonFlash");
         fx_CannonLight = lightObject.GetComponent<Light>();
 
+        m_uiManager = GameObject.FindGameObjectWithTag("uiManager").GetComponent<UIManager>();
 
         //Sets Network input
         if ( X_IsAccelerometerON == true )
@@ -97,13 +113,15 @@ public class CannonMovement : MonoBehaviour
         if (fx_Timer <= 0)
         {
             fx_Timer = 0;
+            m_NeedNewFuse = false;
             fx_CannonLight.gameObject.SetActive(false);
         }
         else if (fx_Timer > 0)
         {
+            m_NeedNewFuse = true;
             fx_CannonLight.gameObject.SetActive(true);
         }
-
+/*
         // CONTROLLING PLAYER INPUT
         if (m_SceneManager.m_GameplayActive == true)
         {
@@ -114,19 +132,36 @@ public class CannonMovement : MonoBehaviour
             m_PlayerControlsAreActive = false;
         }
 
-
+*/
         if (m_PlayerControlsAreActive == true)
         {
             //....................................................
             // ACCELEROMETER INPUTS
 
-            if (!keyboardControl)
+            if (!X_keyboardControl)
             {
-                //Gets Accelerometer input from networked client
-                accelerometerInput = new Vector3(netInput.accelX, netInput.accelY, netInput.accelZ);
+                //Gets Accelerometer input from networked client, can use to get accelerometer readings for playtesting
+                //accelerometerInput = new Vector3(netInput.accelX, netInput.accelY, netInput.accelZ);
+
+                if (X_IsPhoneOrientationHorizontal)
+                {
+                    m_CannonRotationValue = netInput.accelY;
+                    accelSafetyPositiveAxis = accelSafetyUp;
+                    accelSafetyNegativeAxis = accelSafetyDown;
+
+                    // *************************************************
+                    // NEED TO FIND OUT THE SAFETY CUSHIONS for the horizontal mode ^^
+                    // *************************************************
+                }
+                else
+                {
+                    m_CannonRotationValue = netInput.accelX;
+                    accelSafetyPositiveAxis = accelSafetyRight;
+                    accelSafetyNegativeAxis = accelSafetyLeft;
+                }
 
                 m_CannonRotationValue = netInput.accelX;
-                print(m_CannonRotationValue);
+                //print(m_CannonRotationValue);
             }
 
             //....................................................
@@ -152,7 +187,7 @@ public class CannonMovement : MonoBehaviour
                 if (m_FiringCooldown <= (m_FiringDuration / 1.5f))
                 {
                     m_PlayCannonSounds = false;
-                    cannonAudioSource.clip = sfx_CannonReload;
+                    cannonAudioSource.PlayOneShot(sfx_CannonReload, cannon_Volume);
                     m_PlayCannonSounds = true;
                 }
 
@@ -167,19 +202,21 @@ public class CannonMovement : MonoBehaviour
 
             if (m_CannonIsFiring == false)
             {
-                //if (Input.GetKey(KeyCode.LeftArrow))
-                //{
-                    if (transform.localRotation.y >= (m_TurningLimit * -1))
+#if UNITY_EDITOR
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+#endif
+                if (transform.localRotation.y >= (m_TurningLimit * -1))
                     {
-                        if (!keyboardControl)
+                        if (!X_keyboardControl)
                         {
-                        if ((m_CannonRotationValue > accelerometerSafetyCushionLeft) && (m_CannonRotationValue < 0.0f))
+                        if ((m_CannonRotationValue > accelSafetyNegativeAxis) && (m_CannonRotationValue < 0.0f))
                             {
-                                print("greater than ciushion");
+                                //print("greater than ciushion");
                                 m_TurningSpeed = 0;
                                 m_PlayCannonSounds = false;
                             }
-                        else if (m_CannonRotationValue <= accelerometerSafetyCushionLeft)
+                        else if (m_CannonRotationValue <= accelSafetyNegativeAxis)
                             {
                             m_TurningSpeed = m_TurningCapabilitySpeed * (m_CannonRotationValue * -1);
                                 transform.Rotate(-aTurnVector);
@@ -197,7 +234,7 @@ public class CannonMovement : MonoBehaviour
                                 }
                             }
                         }
-                        else if (keyboardControl)
+                        else if (X_keyboardControl)
                         {
                             m_TurningSpeed = m_TurningCapabilitySpeed;
                             transform.Rotate(-aTurnVector);
@@ -215,30 +252,32 @@ public class CannonMovement : MonoBehaviour
                             }
                         }
                     }
-                //}
-                //else if (Input.GetKeyUp(KeyCode.LeftArrow))
-                //{
-                //    m_ShowFuseBurning = false;
+#if UNITY_EDITOR
+                    }
+                    else if (Input.GetKeyUp(KeyCode.LeftArrow))
+                    {
+                        m_ShowFuseBurning = false;
 
-                //    m_PlayCannonSounds = false;
-                //}
+                        m_PlayCannonSounds = false;
+                    }
 
-
+#endif
                 //..................................................
                 // TURNING RIGHT
-
-                //if (Input.GetKey(KeyCode.RightArrow))
-                //{
+#if UNITY_EDITOR
+                if (Input.GetKey(KeyCode.RightArrow))
+                    {
+#endif
                     if (transform.localRotation.y <= m_TurningLimit)
                     {
-                        if (!keyboardControl)
+                        if (!X_keyboardControl)
                         {
-                        if ((m_CannonRotationValue < accelerometerSafetyCushionRight) && (m_CannonRotationValue > 0.0f))
+                        if ((m_CannonRotationValue < accelSafetyPositiveAxis) && (m_CannonRotationValue > 0.0f))
                             {
                                 m_TurningSpeed = 0;
                                 m_PlayCannonSounds = false;
                             }
-                            else if (m_CannonRotationValue >= accelerometerSafetyCushionRight)
+                            else if (m_CannonRotationValue >= accelSafetyPositiveAxis)
                             {
                             m_TurningSpeed = m_TurningCapabilitySpeed * m_CannonRotationValue;
                                 transform.Rotate(aTurnVector);
@@ -256,7 +295,7 @@ public class CannonMovement : MonoBehaviour
                                 }
                             }
                         }
-                        else if (keyboardControl)
+                        else if (X_keyboardControl)
                         {
                             m_TurningSpeed = m_TurningCapabilitySpeed;
                             transform.Rotate(aTurnVector);
@@ -274,14 +313,16 @@ public class CannonMovement : MonoBehaviour
                             }
                         }
                     }
-                //}
-                //else if (Input.GetKeyUp(KeyCode.RightArrow))
-                //{
-                //    m_ShowFuseBurning = false;
-                //    m_PlayCannonSounds = false;
-                //}
+#if UNITY_EDITOR
+                    }
+                    else if (Input.GetKeyUp(KeyCode.RightArrow))
+                    {
+                        m_ShowFuseBurning = false;
+                        m_PlayCannonSounds = false;
+                    }
+#endif
             }
-        }
+            }
 
         //..................................................
         // SFX
@@ -300,11 +341,15 @@ public class CannonMovement : MonoBehaviour
 
         //....................................................
         // LOCK CONTROLS
-
+        /*
         if (m_SceneManager.m_OrderInScene == 9)
         {
             m_PlayerControlsAreActive = false;
         }
+        */
+
+        if (m_uiManager.m_GameHasEnded)
+            cannonAudioSource.Stop();
     }
 
     //....................................................................
@@ -323,11 +368,13 @@ public class CannonMovement : MonoBehaviour
 
             fx_Timer = fx_TimerDur;
 
+            /*
             CannonBall cannonBallObject;
             cannonBallObject = Instantiate(m_CannonBallPrefab) as CannonBall;
 
             cannonBallObject.transform.position = m_CannonBallSpawnPoint.position + 1.0f * Vector3.zero;
             cannonBallObject.m_CannonBallDir = transform.forward * 1;
+            */
 
             m_FiringCooldown = m_FiringDuration;
         }

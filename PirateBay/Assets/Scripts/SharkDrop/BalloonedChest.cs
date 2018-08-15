@@ -55,8 +55,8 @@ public class BalloonedChest : MonoBehaviour
     {
         m_RigidBody = gameObject.GetComponent<Rigidbody>();
 
-        GameObject sfxBalloonedObject = GameObject.FindWithTag("SharkSounds");
-        balloonObjectAudioSource = sfxBalloonedObject.GetComponent<AudioSource>();
+        //GameObject sfxBalloonedObject = GameObject.FindWithTag("SharkSounds");
+        //balloonObjectAudioSource = sfxBalloonedObject.GetComponent<AudioSource>();
 
         GameObject missCollectorObject = GameObject.FindGameObjectWithTag("MissCollector");
         m_MissRef = missCollectorObject.GetComponent<MissCollector>();

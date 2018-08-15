@@ -5,7 +5,9 @@ using Vuforia;
 
 public class FD_Player : MonoBehaviour {
 
+    
 	private UIManager UI_manager;
+
 	[SerializeField]
 	private GameObject[] fairyTargets;
 	private float[] distances;
@@ -24,8 +26,12 @@ public class FD_Player : MonoBehaviour {
 	{
 		UI_manager = GameObject.FindGameObjectWithTag("uiManager").GetComponent<UIManager>();
 		//fairyTargets = GameObject.FindGameObjectsWithTag("Target");
+
+        //Sets Fairy Targets
 		distances = new float[fairyTargets.Length];
         targetNumb = 0;
+        
+        //Gets Vuforia Instance in Game
 		var vuforia = VuforiaARController.Instance;
     	vuforia.RegisterVuforiaStartedCallback(OnVuforiaStarted);
     	vuforia.RegisterOnPauseCallback(OnPaused);
@@ -52,21 +58,26 @@ public class FD_Player : MonoBehaviour {
 	void Update () 
 	{
 		//if(!UI_manager.m_GameHasEnded)
-		if(targetNumb < 3)
+        // Passes when number of targets is less than required number
+		if(targetNumb < UI_manager.m_NumberNeededToWin)
 		{
+            // gets distance between current target and camera and sets animation value
 			distances[targetNumb] = Vector3.Distance(gameObject.transform.position, fairyTargets[targetNumb].transform.position);
             fairyTargets[targetNumb].GetComponent<FairyPoof>().fairy_queen.GetComponent<Animator>().SetFloat("Proximity", distances[targetNumb]);
 
+            // Activates when within a certain proximity
+            // can activate from gameobject for testing purposes
             if (distances[targetNumb] < distanceActive || Test)
 			{
 				
 				StartCoroutine("fairyCount");
 				if(!firstpass)
 				{
+                    //Starts fairy sfx
                 	fairyTargets[targetNumb].GetComponent<FairyPoof>().StartCoroutine("fairyScreech");
 					firstpass = true;
 				}
-
+                // Animation
                 mopAnim.Play();
 				collectingStarted = true;
 				/*
@@ -78,9 +89,11 @@ public class FD_Player : MonoBehaviour {
 			}
 			else
 			{
+                // Activates only when player was within proximity distance
 				if(collectingStarted)
 				{
-					//mopAnim.Rewind();
+                    //Stops all animations, sounds and coroutines
+                    mopAnim.Rewind();
 					mopAnim.Stop();
                     fairyTargets[targetNumb].GetComponent<FairyPoof>().StopCoroutine("fairyScreech");
 					firstpass = false;
@@ -97,23 +110,31 @@ public class FD_Player : MonoBehaviour {
         //Debug.Log(targetNumb);
 	}
 
+
+    // Adds to fairies collected and explodes them
 	void CollectFairy()
 	{
-		UI_manager.m_FairiesObtained += 1;
+		UI_manager.m_NumberObtained += 1;
         fairyTargets[targetNumb].GetComponent<FairyPoof>().StartCoroutine("explodeBody");
         
         Test = false;
         //if(UI_manager.m_GameHasEnded == false)
-		if(targetNumb < 3)
+        if (targetNumb < 3)
+        {
+            fairyTargets[targetNumb].SetActive(false);
             targetNumb += 1;
+            fairyTargets[targetNumb].SetActive(true);
+        }
 	}
 
+    //Starts counter for fairy dusting
     private IEnumerator fairyCount()
     {
         yield return new WaitForSeconds(waitTime);
 		if(UI_manager.m_GameHasEnded == false)
 		{
         	CollectFairy();
+            UI_manager.StartCoroutine("tutorialTextDisplay");
         	UI_manager.StartCoroutine("goldObtained");
 		}
 		

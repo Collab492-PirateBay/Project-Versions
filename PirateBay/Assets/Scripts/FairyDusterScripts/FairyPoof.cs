@@ -48,14 +48,16 @@ public class FairyPoof : MonoBehaviour, ITrackableEventHandler {
         //fairy_queen.GetComponent<Animator>().SetFloat
 	}
 
+    // picks a random sound and plays it at a certain interval
     public IEnumerator fairyScreech()
     {
         int radNumb = Random.Range(0, fairysounds.Length);
         playSound.PlayOneShot(fairysounds[radNumb]);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(3.0f);
         StartCoroutine("fairyScreech");
     }
 
+    //Explodes body
     public IEnumerator explodeBody()
     {
         var smoker  = Instantiate(smoke, new Vector3(transform.position.x, transform.position.y - 1, transform.position.z-0.5f), Quaternion.identity);

@@ -12,9 +12,10 @@ public class UIManager : MonoBehaviour
 
     //GAME REQUIREMENTS
     [SerializeField] 
-    private int m_FairiesNeededToWin = 3;
-    public int m_FairiesObtained = 0;
-    public Text m_GameReqText;
+    public int m_NumberNeededToWin = 3;
+    public int m_NumberObtained = 0;
+    public Text m_GameReqText,
+                m_GameReqTextShadow;
 
     public bool m_GameHasEnded;
 
@@ -22,6 +23,7 @@ public class UIManager : MonoBehaviour
     //START & END SCREEN UI
 
     public bool hasGameStarted = false;
+
     [SerializeField]
     private GameObject endScreenUIObjects;
 
@@ -48,6 +50,8 @@ public class UIManager : MonoBehaviour
                 tutorialText;
     public GameObject notifyText;
 
+    [HideInInspector]
+    public int tempGoldAdded = 500;
 
 	void Start () 
     {
@@ -58,6 +62,7 @@ public class UIManager : MonoBehaviour
         //GAME UI 
         gameplayUIObjects = GameObject.FindGameObjectsWithTag("HideOnPause");
 
+        //endScreenUIObjects = GameObject.FindGameObjectWithTag("EndScreenElements");
 
         m_CountdownTimer = m_CountdownDur;
         m_GameHasStarted = false;
@@ -76,7 +81,7 @@ public class UIManager : MonoBehaviour
 
 	void Update () 
     {
-        if (m_FairiesObtained >= m_FairiesNeededToWin)
+        if (m_NumberObtained >= m_NumberNeededToWin)
         {
             if(!m_GameHasEnded)
                  StartCoroutine("EndTimer");
@@ -121,8 +126,9 @@ public class UIManager : MonoBehaviour
         }
 
         //SCORE DISPLAY
-        m_GameReqText.text = (m_FairiesObtained + " / " + m_FairiesNeededToWin);
-	}
+        m_GameReqText.text = (m_NumberObtained + " / " + m_NumberNeededToWin);
+        m_GameReqTextShadow.text = (m_NumberObtained + " / " + m_NumberNeededToWin);
+    }
 
     public void GameStart()
     {
@@ -182,7 +188,7 @@ public class UIManager : MonoBehaviour
     {
         tutorialText.text = "Good Job!";
         yield return new WaitForSeconds(2.5f);
-        tutorialText.text = "Find the next Fairy Nest!";
+        tutorialText.text = "Go to the next one!";
         yield return new WaitForSeconds(2.5f);
         tutorialText.text = "";
     }
@@ -190,11 +196,11 @@ public class UIManager : MonoBehaviour
     public IEnumerator goldObtained()
     {
         notifyText.SetActive(true);
-        if(!m_GameHasEnded)
-            StartCoroutine("tutorialTextDisplay");
+        //if(!m_GameHasEnded)
+            //StartCoroutine("tutorialTextDisplay");
         yield return new WaitForSeconds(2.5f);
         notifyText.SetActive(false);
-        goldEarned += 500;
+        goldEarned += tempGoldAdded;
         goldEarnedText.text = "" + goldEarned;
         goldEarnedTextShadow.text = "" + goldEarned;
     }

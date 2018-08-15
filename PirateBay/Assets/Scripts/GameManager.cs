@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour {
 
     private string currentScenename;
     
+    //Loads new scene
     public void setCurrentScene(string name)
     {
         currentScenename = name;
